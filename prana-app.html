@@ -412,10 +412,11 @@ body{background:linear-gradient(135deg,#e8e0d4,#d5d0c8);display:flex;align-items
   <div style="padding:10px 20px 0;flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:6px;" id="daily-sliders"></div>
   <div style="padding:8px 20px 80px;">
     <div style="position:relative;">
-      <textarea placeholder="Anything else you'd like to share..." style="width:100%;height:90px;padding:14px 44px 14px 14px;border:1.5px solid #E8DFD0;border-radius:16px;background:#fff;font-size:13px;color:#1B4332;font-family:inherit;outline:none;resize:none;box-sizing:border-box;"></textarea>
-      <button title="Voice input" style="position:absolute;right:12px;top:12px;background:none;border:none;cursor:pointer;opacity:.55;padding:0;">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2D6A4F" stroke-width="2"><rect x="9" y="1" width="6" height="11" rx="3"/><path d="M19 10v1a7 7 0 01-14 0v-1M12 19v4M8 23h8"/></svg>
+      <textarea id="log-textarea" placeholder="Anything else you'd like to share... (or tap 🎤)" style="width:100%;height:90px;padding:14px 44px 14px 14px;border:1.5px solid #E8DFD0;border-radius:16px;background:#fff;font-size:13px;color:#1B4332;font-family:inherit;outline:none;resize:none;box-sizing:border-box;"></textarea>
+      <button id="voice-input-btn" title="Tap to record — powered by Groq Whisper" style="position:absolute;right:12px;top:12px;background:none;border:none;cursor:pointer;opacity:.55;padding:0;transition:opacity .2s;">
+        <svg id="mic-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2D6A4F" stroke-width="2"><rect x="9" y="1" width="6" height="11" rx="3"/><path d="M19 10v1a7 7 0 01-14 0v-1M12 19v4M8 23h8"/></svg>
       </button>
+      <span id="mic-status" style="display:none;position:absolute;left:14px;bottom:-20px;font-size:10px;color:#EF4444;font-weight:600;letter-spacing:.3px;"></span>
     </div>
   </div>
   <button class="circle-arrow" onclick="go('screen8')">
@@ -834,7 +835,7 @@ function collectCheckinFromUI(){
   var ens6q={},total=0;
   var rows=document.querySelectorAll('#daily-sliders .slider-row');
   rows.forEach(function(r,i){var v=parseInt(r.querySelector('input[type=range]').value)||0;ens6q[keys[i]]=v;total+=v;});
-  var ta=document.querySelector('#screen7 textarea');
+  var ta=document.getElementById('log-textarea');
   var triggers=[];document.querySelectorAll('#trigger-chips .chip.active').forEach(function(c){triggers.push(c.textContent.trim());});
   var hrs=parseInt(document.getElementById('sleep-hrs').value)||7;
   var min=parseInt(document.getElementById('sleep-min').value)||0;
@@ -864,7 +865,7 @@ function collectProfileFromUI(){
 
 <!-- ════ NLP SERVICE (mock mode) ════ -->
 <script>
-var GROQ_API_KEY='';var USE_MOCK=true;
+var GROQ_API_KEY='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';var USE_MOCK=true;
 async function mapSymptomsToTerms(freeText,ens6qScores){
   if(!freeText||!freeText.trim())return{mappedTerms:[],overallSentiment:'neutral',keyInsight:'No text.',uncertainTerms:[],source:'none',model:'N/A',timestamp:new Date().toISOString()};
   return _mockNlp(freeText,ens6qScores);
@@ -1046,6 +1047,7 @@ document.addEventListener('DOMContentLoaded',function(){
   _wireDoneButton();
   _wireHomeCards();
   _wireSignOut();
+  initVoiceInput();
 });
 
 window.addEventListener('authStateChanged',async function(e){
@@ -1168,6 +1170,109 @@ function _wireHomeCards(){
   var rc=document.getElementById('card-report');
   if(rc)rc.addEventListener('click',function(){go('screen-report');});
 }
+
+// ── Voice Input (Groq Whisper) ────────────────────────────────────────────────
+function initVoiceInput(){
+  var btn=document.getElementById('voice-input-btn');
+  var textarea=document.getElementById('log-textarea');
+  var micIcon=document.getElementById('mic-icon');
+  var micStatus=document.getElementById('mic-status');
+  if(!btn||!textarea)return;
+
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+    btn.style.display='none';return;
+  }
+
+  var mediaRecorder=null;
+  var chunks=[];
+  var isRecording=false;
+  var stream=null;
+
+  function _setMicState(recording){
+    isRecording=recording;
+    btn.style.opacity='1';
+    if(recording){
+      micIcon.setAttribute('stroke','#EF4444');
+      micIcon.style.animation='gentlePulse .8s ease-in-out infinite';
+      micStatus.textContent='Recording… tap to stop';
+      micStatus.style.display='block';
+      micStatus.style.color='#EF4444';
+    } else {
+      micIcon.setAttribute('stroke','#2D6A4F');
+      micIcon.style.animation='';
+      btn.style.opacity='.55';
+      micStatus.style.display='none';
+      micStatus.textContent='';
+    }
+  }
+
+  function _showStatus(msg,color,ms){
+    micStatus.textContent=msg;
+    micStatus.style.color=color||'#6B7280';
+    micStatus.style.display='block';
+    if(ms)setTimeout(function(){micStatus.style.display='none';},ms);
+  }
+
+  async function _startRecording(){
+    try{
+      stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    }catch(err){
+      _showStatus('Mic access denied','#EF4444',3000);return;
+    }
+    chunks=[];
+    // Prefer webm; fall back to whatever the browser supports
+    var mimeType='audio/webm';
+    if(!MediaRecorder.isTypeSupported(mimeType))mimeType='audio/ogg;codecs=opus';
+    if(!MediaRecorder.isTypeSupported(mimeType))mimeType='';
+    mediaRecorder=new MediaRecorder(stream,mimeType?{mimeType:mimeType}:{});
+    mediaRecorder.ondataavailable=function(e){if(e.data.size>0)chunks.push(e.data);};
+    mediaRecorder.onstop=_sendToGroq;
+    mediaRecorder.start();
+    _setMicState(true);
+  }
+
+  function _stopRecording(){
+    if(mediaRecorder&&mediaRecorder.state!=='inactive'){mediaRecorder.stop();}
+    if(stream){stream.getTracks().forEach(function(t){t.stop();});stream=null;}
+    _setMicState(false);
+    _showStatus('Transcribing…','#6B7280');
+  }
+
+  async function _sendToGroq(){
+    if(!chunks.length){micStatus.style.display='none';return;}
+    var blob=new Blob(chunks,{type:mediaRecorder.mimeType||'audio/webm'});
+    var ext=(mediaRecorder.mimeType&&mediaRecorder.mimeType.includes('ogg'))?'ogg':'webm';
+    var fd=new FormData();
+    fd.append('file',blob,'audio.'+ext);
+    fd.append('model','whisper-large-v3-turbo');
+    // language omitted → Whisper auto-detects
+    try{
+      var resp=await fetch('https://api.groq.com/openai/v1/audio/transcriptions',{
+        method:'POST',
+        headers:{Authorization:'Bearer '+GROQ_API_KEY},
+        body:fd
+      });
+      if(!resp.ok){var err=await resp.text();throw new Error(err);}
+      var json=await resp.json();
+      var text=(json.text||'').trim();
+      if(text){
+        var sep=(textarea.value&&textarea.value.slice(-1)!==' ')?' ':'';
+        textarea.value=textarea.value+sep+text;
+        _showStatus('Done ✓','#16A34A',2000);
+      } else {
+        _showStatus('Nothing heard — try again','#6B7280',2500);
+      }
+    }catch(e){
+      console.error('[Groq STT]',e);
+      _showStatus('Transcription failed','#EF4444',3000);
+    }
+  }
+
+  btn.addEventListener('click',function(){
+    if(isRecording){_stopRecording();}else{_startRecording();}
+  });
+}
+// ─────────────────────────────────────────────────────────────────────────────
 
 async function _runCheckinPipeline(){
   var data=collectCheckinFromUI();

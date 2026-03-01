@@ -1,0 +1,61 @@
+<svg width="800" height="800" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Outer soft glow background circle -->
+  <circle cx="60" cy="60" r="58" fill="url(#bgGrad)" opacity="0.18"/>
+
+  <!-- Lotus petals — layered with gradient fills for depth -->
+  <!-- Far left petal -->
+  <ellipse cx="60" cy="50" rx="13" ry="32" fill="url(#petal3)" opacity="0.55" transform="rotate(-50 60 50)"/>
+  <!-- Mid left petal -->
+  <ellipse cx="60" cy="50" rx="13" ry="32" fill="url(#petal2)" opacity="0.72" transform="rotate(-25 60 50)"/>
+  <!-- Centre petal -->
+  <ellipse cx="60" cy="50" rx="13" ry="32" fill="url(#petal1)" opacity="0.95"/>
+  <!-- Mid right petal -->
+  <ellipse cx="60" cy="50" rx="13" ry="32" fill="url(#petal2)" opacity="0.72" transform="rotate(25 60 50)"/>
+  <!-- Far right petal -->
+  <ellipse cx="60" cy="50" rx="13" ry="32" fill="url(#petal3)" opacity="0.55" transform="rotate(50 60 50)"/>
+
+  <!-- Petal highlight sheen -->
+  <ellipse cx="60" cy="38" rx="5" ry="14" fill="#ffffff" opacity="0.22" transform="rotate(-8 60 38)"/>
+
+  <!-- Lotus centre orb with inner glow -->
+  <circle cx="60" cy="42" r="8" fill="url(#orbGrad)" opacity="0.9"/>
+  <circle cx="57" cy="39" r="2.5" fill="#ffffff" opacity="0.5"/>
+
+  <!-- Water / stem arc -->
+  <path d="M28 82Q60 100 92 82" stroke="#74C69D" stroke-width="2.8" fill="none" stroke-linecap="round" opacity="0.8"/>
+
+  <!-- Gradient definitions -->
+  <defs>
+    <radialGradient id="bgGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#52B788"/>
+      <stop offset="100%" stop-color="#2D6A4F"/>
+    </radialGradient>
+
+    <!-- Centre petal — lightest -->
+    <linearGradient id="petal1" x1="60" y1="20" x2="60" y2="80" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#D8F3E8"/>
+      <stop offset="55%" stop-color="#B7E4C7"/>
+      <stop offset="100%" stop-color="#74C69D"/>
+    </linearGradient>
+
+    <!-- Mid petals -->
+    <linearGradient id="petal2" x1="60" y1="20" x2="60" y2="80" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#B7E4C7"/>
+      <stop offset="60%" stop-color="#74C69D"/>
+      <stop offset="100%" stop-color="#52B788"/>
+    </linearGradient>
+
+    <!-- Outer petals — deepest -->
+    <linearGradient id="petal3" x1="60" y1="20" x2="60" y2="80" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#74C69D"/>
+      <stop offset="60%" stop-color="#52B788"/>
+      <stop offset="100%" stop-color="#40916C"/>
+    </linearGradient>
+
+    <!-- Centre orb -->
+    <radialGradient id="orbGrad" cx="40%" cy="35%" r="60%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#B7E4C7" stop-opacity="0.6"/>
+    </radialGradient>
+  </defs>
+</svg>
