@@ -146,6 +146,10 @@ body{background:linear-gradient(135deg,#e8e0d4,#d5d0c8);display:flex;align-items
 /* goal prox section */
 .prox-section{padding:14px 16px;border-radius:16px;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.05);margin-top:8px;}
 </style>
+<!-- Firebase v9 compat SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 </head>
 <body>
 <div class="phone-outer">
@@ -191,7 +195,7 @@ body{background:linear-gradient(135deg,#e8e0d4,#d5d0c8);display:flex;align-items
     <div class="form-field"><label>Email</label><input type="email" placeholder="you@example.com"/></div>
     <div class="form-field"><label>Password</label><input type="password" placeholder="••••••••"/></div>
     <p style="font-size:12px;color:#40916C;font-weight:600;align-self:flex-end;cursor:pointer;margin:0 0 28px;">Forgot password?</p>
-    <button class="btn-primary" onclick="go('home')">Log In</button>
+    <button class="btn-primary" id="login-btn">Log In</button>
     <p style="font-size:13px;color:#6B7C6E;margin-top:20px;">No account? <span style="color:#2D6A4F;font-weight:600;cursor:pointer;" onclick="go('signup')">Sign Up</span></p>
   </div>
 </div>
@@ -205,7 +209,7 @@ body{background:linear-gradient(135deg,#e8e0d4,#d5d0c8);display:flex;align-items
     <p style="font-size:13px;color:#6B7C6E;margin:0 0 32px;text-align:center;">Begin your path to mindful healing</p>
     <div class="form-field"><label>Email</label><input type="email" placeholder="you@example.com"/></div>
     <div class="form-field"><label>Password</label><input type="password" placeholder="Min. 8 characters"/></div>
-    <button class="btn-primary" onclick="go('screen2')" style="margin-bottom:16px;">Sign Up</button>
+    <button class="btn-primary" id="signup-btn" style="margin-bottom:16px;">Sign Up</button>
     <div style="display:flex;align-items:center;gap:12px;width:100%;margin:8px 0 16px;"><div style="flex:1;height:1px;background:#E8DFD0;"></div><span style="font-size:12px;color:#6B7C6E;">or</span><div style="flex:1;height:1px;background:#E8DFD0;"></div></div>
     <button class="btn-secondary"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg> Continue with Google</button>
     <p style="font-size:13px;color:#6B7C6E;margin-top:20px;">Already have an account? <span style="color:#2D6A4F;font-weight:600;cursor:pointer;" onclick="go('login')">Log In</span></p>
@@ -285,7 +289,7 @@ body{background:linear-gradient(135deg,#e8e0d4,#d5d0c8);display:flex;align-items
   </div>
   <div style="padding:16px 24px 90px;flex:1;display:flex;flex-direction:column;gap:6px;" id="goal-sliders"></div>
   <div style="position:sticky;bottom:0;padding:12px 28px 28px;background:linear-gradient(transparent,#FAF6F0 20%);text-align:center;">
-    <button class="btn-next" onclick="go('allset')">Next →</button>
+    <button class="btn-next" id="screen5-next-btn">Next →</button>
   </div>
 </div>
 
@@ -316,7 +320,7 @@ body{background:linear-gradient(135deg,#e8e0d4,#d5d0c8);display:flex;align-items
 <div class="screen hidden no-scroll" id="home" style="padding:0;">
   <div class="settings-menu" id="settingsMenu">
     <button onclick="alert('Notifications coming soon!')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1B4332" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg> Notifications</button>
-    <button class="danger" onclick="go('landing');document.getElementById('settingsMenu').classList.remove('show');"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c0392b" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg> Sign Out</button>
+    <button class="danger" id="signout-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c0392b" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg> Sign Out</button>
   </div>
 
   <!-- Green greeting header -->
@@ -349,7 +353,7 @@ body{background:linear-gradient(135deg,#e8e0d4,#d5d0c8);display:flex;align-items
     </div>
 
     <!-- Card 2: Analytics -->
-    <div class="home-card" style="background:linear-gradient(135deg,#d6dcc8,#c4ccb6);box-shadow:0 6px 24px rgba(0,0,0,.06);min-height:120px;" onclick="alert('Insights & Patterns — coming next!')">
+    <div class="home-card" id="card-analytics" style="background:linear-gradient(135deg,#d6dcc8,#c4ccb6);box-shadow:0 6px 24px rgba(0,0,0,.06);min-height:120px;">
       <div class="card-icon" style="background:rgba(45,106,79,.1);">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2D6A4F" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
       </div>
@@ -373,7 +377,7 @@ body{background:linear-gradient(135deg,#e8e0d4,#d5d0c8);display:flex;align-items
     </div>
 
     <!-- Card 4: SymptoReport -->
-    <div class="home-card" style="background:linear-gradient(135deg,#bdd4c2,#a5c0ac);box-shadow:0 6px 24px rgba(45,106,79,.1);min-height:120px;" onclick="alert('SymptoReport for clinicians — coming next!')">
+    <div class="home-card" id="card-report" style="background:linear-gradient(135deg,#bdd4c2,#a5c0ac);box-shadow:0 6px 24px rgba(45,106,79,.1);min-height:120px;">
       <div class="card-icon" style="background:rgba(45,106,79,.12);">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2D6A4F" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 14l2 2 4-4"/></svg>
       </div>
@@ -454,7 +458,7 @@ body{background:linear-gradient(135deg,#e8e0d4,#d5d0c8);display:flex;align-items
 
     <div style="flex:1;"></div>
     <div style="text-align:center;padding-top:12px;">
-      <button class="btn-done" onclick="markLogged();go('home')">Done ✓</button>
+      <button class="btn-done" id="done-btn">Done ✓</button>
     </div>
   </div>
 </div>
@@ -485,15 +489,628 @@ body{background:linear-gradient(135deg,#e8e0d4,#d5d0c8);display:flex;align-items
   </div>
 </div>
 
+<!-- ════════ SCREEN: CLINICIAN REPORT ════════ -->
+<div class="screen hidden no-scroll" id="screen-report" style="padding:0;background:#ECEBE6;display:flex;flex-direction:column;">
+
+  <!-- Sticky header -->
+  <div style="background:linear-gradient(135deg,#1B4332,#2D6A4F);padding:72px 20px 16px;border-radius:0 0 24px 24px;flex-shrink:0;">
+    <button class="back-btn" style="top:18px;left:16px;background:rgba(255,255,255,.15);color:#fff;" onclick="go('home')">←</button>
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <div>
+        <h2 style="font-size:17px;font-weight:700;color:#fff;margin:0;">Clinician Report</h2>
+        <p style="font-size:10px;color:#B7E4C7;margin-top:3px;">14-day window · Ready to share</p>
+      </div>
+      <button id="report-dl-btn" onclick="downloadReport()" style="background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.4);color:#fff;border-radius:10px;padding:8px 12px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:5px;transition:all .2s;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+        Download PDF
+      </button>
+    </div>
+  </div>
+
+  <!-- Scrollable report area -->
+  <div style="flex:1;overflow-y:auto;padding:14px 12px 40px;">
+    <div id="report-print-area" style="background:#fff;border-radius:14px;padding:20px 16px;box-shadow:0 2px 12px rgba(0,0,0,.06);font-family:Georgia,'Times New Roman',serif;font-size:11px;color:#111;line-height:1.5;">
+      <!-- Populated by buildReport() -->
+      <p style="color:#999;font-size:12px;text-align:center;padding:40px 0;">Loading report…</p>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ SCREEN: INSIGHTS & PATTERNS ════════ -->
+<div class="screen hidden scrollable" id="screen-insights" style="padding:0;background:#FAF6F0;">
+
+  <!-- Sticky Header + Tabs -->
+  <div style="background:linear-gradient(135deg,#2D6A4F,#40916C);padding:72px 20px 14px;border-radius:0 0 24px 24px;position:sticky;top:0;z-index:20;">
+    <button class="back-btn" style="top:18px;left:16px;background:rgba(255,255,255,.15);color:#fff;" onclick="go('home')">←</button>
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
+      <div>
+        <h2 style="font-size:17px;font-weight:700;color:#fff;margin:0;">Insights & Patterns</h2>
+        <p id="ins-header-sub" style="font-size:10px;color:#B7E4C7;margin-top:3px;">Meera · 28 days · ENS-IT</p>
+      </div>
+      <span id="ins-demo-badge" style="background:rgba(255,255,255,.18);border-radius:8px;padding:4px 9px;font-size:10px;color:#fff;font-weight:600;">Demo</span>
+    </div>
+    <!-- Tab Switcher -->
+    <div style="display:flex;gap:4px;background:rgba(0,0,0,.2);border-radius:10px;padding:3px;">
+      <button class="itab" data-t="daily"   onclick="switchInsTab('daily')"   style="flex:1;padding:6px 0;border:none;border-radius:8px;background:rgba(255,255,255,.9);color:#2D6A4F;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;">Daily</button>
+      <button class="itab" data-t="weekly"  onclick="switchInsTab('weekly')"  style="flex:1;padding:6px 0;border:none;border-radius:8px;background:transparent;color:rgba(255,255,255,.65);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;">Weekly</button>
+      <button class="itab" data-t="monthly" onclick="switchInsTab('monthly')" style="flex:1;padding:6px 0;border:none;border-radius:8px;background:transparent;color:rgba(255,255,255,.65);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;">Monthly</button>
+    </div>
+  </div>
+
+  <!-- Scrollable Content -->
+  <div style="padding:12px 14px 48px;">
+
+    <!-- Flare Alert (tab-independent) -->
+    <div id="ins-flare" style="display:none;margin-bottom:10px;"></div>
+
+    <!-- Goal Progress -->
+    <p style="font-size:10px;font-weight:600;color:#6B7C6E;letter-spacing:.8px;text-transform:uppercase;margin:0 0 8px;">Goal Progress</p>
+    <div id="ins-goals" style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;"></div>
+
+    <!-- ENS6Q Trends Chart -->
+    <p style="font-size:10px;font-weight:600;color:#6B7C6E;letter-spacing:.8px;text-transform:uppercase;margin:0 0 8px;">ENS6Q Symptom Trends</p>
+    <div style="background:#fff;border-radius:16px;padding:14px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,.04);">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <span id="ins-chart-title" style="font-size:11px;font-weight:600;color:#1B4332;"></span>
+        <span id="ins-chart-sub"   style="font-size:10px;color:#999;"></span>
+      </div>
+      <div style="height:160px;"><canvas id="ins-chart"></canvas></div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;" id="ins-chart-legend"></div>
+    </div>
+
+    <!-- Key Insights Row (3 cards) -->
+    <p style="font-size:10px;font-weight:600;color:#6B7C6E;letter-spacing:.8px;text-transform:uppercase;margin:0 0 8px;">Key Insights</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px;" id="ins-cards-row"></div>
+
+    <!-- Trigger Correlation -->
+    <p style="font-size:10px;font-weight:600;color:#6B7C6E;letter-spacing:.8px;text-transform:uppercase;margin:0 0 8px;">Trigger Correlation</p>
+    <div style="background:#fff;border-radius:16px;padding:14px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,.04);">
+      <div id="ins-triggers"></div>
+    </div>
+
+    <!-- Goal Momentum (Weekly + Monthly only) -->
+    <div id="ins-momentum" style="display:none;">
+      <p style="font-size:10px;font-weight:600;color:#6B7C6E;letter-spacing:.8px;text-transform:uppercase;margin:0 0 8px;">Goal Momentum</p>
+      <div style="display:flex;flex-direction:column;gap:8px;" id="ins-momentum-content"></div>
+    </div>
+
+  </div>
+</div>
+
 </div><!-- end phone -->
 </div><!-- end phone-outer -->
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<!-- ════ FIREBASE CONFIG ════ -->
 <script>
+const firebaseConfig = {
+  apiKey: "AIzaSyCAMPCftg-xCBvwmSdixcPyfFaDg4ef5rc",
+  authDomain: "prana-57962.firebaseapp.com",
+  projectId: "prana-57962",
+  storageBucket: "prana-57962.firebasestorage.app",
+  messagingSenderId: "1059743801197",
+  appId: "1:1059743801197:web:568890e46c9aafe76fc464"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db   = firebase.firestore();
+db.enablePersistence({synchronizeTabs:true}).catch(function(e){console.warn('[Firebase] Persistence:',e.code);});
+auth.onAuthStateChanged(function(user){
+  console.log('[Auth]', user ? 'Signed in: '+user.uid : 'Signed out');
+  window.dispatchEvent(new CustomEvent('authStateChanged',{detail:{user:user}}));
+});
+function isFirebaseConfigured(){return firebaseConfig.apiKey!=='YOUR_API_KEY';}
+</script>
+
+<!-- ════ ENS CONFIG ════ -->
+<script>
+var ENS_DOMAINS=[
+  {key:'suffocation',name:'Nasal Suffocation',shortName:'Suffocation'},
+  {key:'burning',name:'Nasal Burning',shortName:'Burning'},
+  {key:'openness',name:'Nasal Openness',shortName:'Openness'},
+  {key:'crusting',name:'Nasal Crusting',shortName:'Crusting'},
+  {key:'dryness',name:'Nasal Dryness',shortName:'Dryness'},
+  {key:'air',name:'Impaired Air Sensation',shortName:'Air'},
+];
+var ENS_DOMAIN_MAP={};
+ENS_DOMAINS.forEach(function(d){ENS_DOMAIN_MAP[d.key]=d;});
+var ENS_DOMAIN_KEYS=ENS_DOMAINS.map(function(d){return d.key;});
+var ENS_SNOMED={suffocation:'Nocturnal dyspnea / Nasal airflow obstruction',burning:'Nasal mucosal inflammation',openness:'Paradoxical nasal patency',crusting:'Nasal crusting',dryness:'Nasal mucosal dryness',air:'Impaired nasal airflow sensation'};
+var GOALS=[
+  {key:'goalA',name:'Sleep without breathing distress',desc:'Rest through the night peacefully',domains:['suffocation','dryness']},
+  {key:'goalB',name:'Focus through work or study',desc:'Get through your day undistracted',domains:['suffocation','dryness','crusting']},
+  {key:'goalC',name:'Reduce daily nasal discomfort',desc:'Ease dryness, burning & crusting',domains:['burning','crusting','dryness']},
+  {key:'goalD',name:'Breathe without thinking about it',desc:'Stop hyper-awareness of every breath',domains:['suffocation','air','openness']},
+  {key:'goalE',name:'Understand my symptom triggers',desc:"Discover patterns you can't see alone",domains:['suffocation','burning','openness','crusting','dryness','air']},
+];
+var GOAL_MAP={};
+GOALS.forEach(function(g){GOAL_MAP[g.key]=g;});
+var TRIGGERS=[
+  {key:'ac',label:'A/C'},{key:'dry_air',label:'Dry Air'},{key:'stress',label:'Stress'},
+  {key:'poor_sleep',label:'Poor Sleep'},{key:'exercise',label:'Exercise'},
+  {key:'weather_change',label:'Weather Change'},{key:'skipped_meds',label:'Skipped Meds'},
+];
+var TRACKING={initialWindowDays:14,minDaysForTrend:6,minDaysForSignal:7,minTriggerDays:3};
+var CALIBRATION={minCheckins:5,domainThreshold:0.5};
+var CORRELATION_THRESHOLDS={strong:1.0,moderate:0.5};
+function goalSliderToTarget(baselineAvg,sliderValue){
+  if(sliderValue<=0)return baselineAvg;
+  if(sliderValue>=5)return 0;
+  return baselineAvg*(1-(sliderValue/5));
+}
+</script>
+
+<!-- ════ AUTH SERVICE ════ -->
+<script>
+async function signUp(email,password){
+  try{
+    var cred=await auth.createUserWithEmailAndPassword(email,password);
+    return{success:true,uid:cred.user.uid,user:cred.user};
+  }catch(e){return{success:false,errorMessage:_friendlyAuthError(e.code)};}
+}
+async function logIn(email,password){
+  try{
+    var cred=await auth.signInWithEmailAndPassword(email,password);
+    return{success:true,uid:cred.user.uid,user:cred.user};
+  }catch(e){return{success:false,errorMessage:_friendlyAuthError(e.code)};}
+}
+async function signOut(){
+  try{await auth.signOut();return{success:true};}
+  catch(e){return{success:false,errorMessage:e.message};}
+}
+async function signInWithGoogle(){
+  try{
+    var provider=new firebase.auth.GoogleAuthProvider();
+    var result=await auth.signInWithPopup(provider);
+    var isNew=result.additionalUserInfo&&result.additionalUserInfo.isNewUser;
+    return{success:true,uid:result.user.uid,user:result.user,isNewUser:isNew};
+  }catch(e){return{success:false,errorMessage:_friendlyAuthError(e.code)};}
+}
+async function sendPasswordReset(email){
+  if(!email||!email.trim())return{success:false,errorMessage:'Please enter your email first.'};
+  try{await auth.sendPasswordResetEmail(email.trim());return{success:true};}
+  catch(e){return{success:false,errorMessage:_friendlyAuthError(e.code)};}
+}
+function getCurrentUserId(){return auth.currentUser?auth.currentUser.uid:null;}
+function isLoggedIn(){return auth.currentUser!==null;}
+function _friendlyAuthError(code){
+  var m={'auth/email-already-in-use':'An account with this email already exists.','auth/invalid-email':'Please enter a valid email address.','auth/weak-password':'Password should be at least 6 characters.','auth/user-not-found':'No account found with this email.','auth/wrong-password':'Incorrect password. Please try again.','auth/too-many-requests':'Too many attempts. Please wait a moment.','auth/network-request-failed':'Network error. Check your connection.','auth/popup-closed-by-user':'Google sign-in was cancelled.','auth/invalid-credential':'Invalid email or password.'};
+  return m[code]||'Something went wrong. Please try again.';
+}
+</script>
+
+<!-- ════ DATABASE SERVICE ════ -->
+<script>
+function _todayString(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+async function saveProfile(uid,profileData){
+  if(!uid)throw new Error('saveProfile requires uid');
+  var doc=Object.assign({},profileData,{createdAt:firebase.firestore.FieldValue.serverTimestamp(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+  try{await db.collection('patients').doc(uid).set(doc,{merge:true});return{success:true};}
+  catch(e){return{success:false,errorMessage:e.message};}
+}
+async function loadProfile(uid){
+  if(!uid)throw new Error('loadProfile requires uid');
+  try{var snap=await db.collection('patients').doc(uid).get();return{success:true,data:snap.exists?snap.data():null};}
+  catch(e){return{success:false,errorMessage:e.message};}
+}
+async function updateProfile(uid,fields){
+  var doc=Object.assign({},fields,{updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+  try{await db.collection('patients').doc(uid).update(doc);return{success:true};}
+  catch(e){return{success:false,errorMessage:e.message};}
+}
+async function saveCheckin(uid,checkinData){
+  if(!uid||!checkinData.date)throw new Error('saveCheckin requires uid and date');
+  var doc=Object.assign({},checkinData,{createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+  try{await db.collection('patients').doc(uid).collection('checkins').doc(checkinData.date).set(doc,{merge:true});return{success:true};}
+  catch(e){return{success:false,errorMessage:e.message};}
+}
+async function updateCheckin(uid,date,fields){
+  try{await db.collection('patients').doc(uid).collection('checkins').doc(date).update(fields);return{success:true};}
+  catch(e){return{success:false,errorMessage:e.message};}
+}
+async function getCheckins(uid,days){
+  days=days||14;
+  try{
+    var snap=await db.collection('patients').doc(uid).collection('checkins').orderBy('date','desc').limit(days).get();
+    var checkins=[];snap.forEach(function(d){checkins.push(d.data());});
+    return{success:true,data:checkins};
+  }catch(e){return{success:false,data:[],errorMessage:e.message};}
+}
+async function getAllCheckins(uid){
+  try{
+    var snap=await db.collection('patients').doc(uid).collection('checkins').orderBy('date','asc').get();
+    var checkins=[];snap.forEach(function(d){checkins.push(d.data());});
+    return{success:true,data:checkins};
+  }catch(e){return{success:false,data:[],errorMessage:e.message};}
+}
+async function hasCheckedInToday(uid){
+  var today=_todayString();
+  try{var snap=await db.collection('patients').doc(uid).collection('checkins').doc(today).get();return{success:true,hasCheckedIn:snap.exists};}
+  catch(e){return{success:false,hasCheckedIn:false};}
+}
+async function updateBaseline(uid,newBaseline){return await updateProfile(uid,newBaseline);}
+function collectCheckinFromUI(){
+  var keys=['suffocation','burning','openness','crusting','dryness','air'];
+  var ens6q={},total=0;
+  var rows=document.querySelectorAll('#daily-sliders .slider-row');
+  rows.forEach(function(r,i){var v=parseInt(r.querySelector('input[type=range]').value)||0;ens6q[keys[i]]=v;total+=v;});
+  var ta=document.querySelector('#screen7 textarea');
+  var triggers=[];document.querySelectorAll('#trigger-chips .chip.active').forEach(function(c){triggers.push(c.textContent.trim());});
+  var hrs=parseInt(document.getElementById('sleep-hrs').value)||7;
+  var min=parseInt(document.getElementById('sleep-min').value)||0;
+  var prox=parseInt(document.getElementById('prox-slider').value)||1;
+  return{date:_todayString(),ens6q:ens6q,ens6qTotal:total,freeText:ta?ta.value.trim():'',triggers:triggers,sleepHours:parseFloat((hrs+min/60).toFixed(2)),goalProximity:prox,nlpOutput:null,goalProgress:null};
+}
+function collectBaselineFromUI(){
+  var keys=['suffocation','burning','openness','crusting','dryness','air'];
+  var baseline={},total=0;
+  var rows=document.querySelectorAll('#baseline-sliders .slider-row');
+  rows.forEach(function(r,i){var v=parseInt(r.querySelector('input[type=range]').value)||0;baseline[keys[i]]=v;total+=v;});
+  return{baselineENS6Q:baseline,baselineTotal:total};
+}
+function collectGoalsFromUI(){
+  var defs=[{key:'goalA',name:'Sleep without breathing distress'},{key:'goalB',name:'Focus through work or study'},{key:'goalC',name:'Reduce daily nasal discomfort'},{key:'goalD',name:'Breathe without thinking about it'},{key:'goalE',name:'Understand my symptom triggers'}];
+  var goals=[];
+  document.querySelectorAll('#goal-sliders .goal-card').forEach(function(c,i){
+    var v=parseInt(c.querySelector('input[type=range]').value)||0;
+    if(v>0&&defs[i])goals.push({key:defs[i].key,name:defs[i].name,target:v});
+  });
+  return goals;
+}
+function collectProfileFromUI(){
+  return{name:(document.getElementById('f-name')||{}).value||'Friend',age:(document.getElementById('f-age')||{}).value||'',gender:(document.getElementById('f-gender')||{}).value||'',phone:(document.getElementById('f-phone')||{}).value||'',meds:(document.getElementById('f-meds')||{}).value||'',blood:(document.getElementById('f-blood')||{}).value||'',allergies:(document.getElementById('f-allergies')||{}).value||'',caretaker:(document.getElementById('f-caretaker')||{}).value||'',subtype:D.subtype||'',surgery:(document.getElementById('f-surgery')||{}).value||''};
+}
+</script>
+
+<!-- ════ NLP SERVICE (mock mode) ════ -->
+<script>
+var GROQ_API_KEY='';var USE_MOCK=true;
+async function mapSymptomsToTerms(freeText,ens6qScores){
+  if(!freeText||!freeText.trim())return{mappedTerms:[],overallSentiment:'neutral',keyInsight:'No text.',uncertainTerms:[],source:'none',model:'N/A',timestamp:new Date().toISOString()};
+  return _mockNlp(freeText,ens6qScores);
+}
+function _mockNlp(freeText,scores){
+  var text=freeText.toLowerCase();
+  var terms=[];
+  var rules=[
+    {kw:["can't breathe","breathing through a straw","gasping","suffocat"],term:{snomedDesc:'Nasal airway obstruction sensation',snomedCode:'267101005',ens6qDomain:'suffocation',severity:'severe'}},
+    {kw:["burns","burning","stinging","irritat"],term:{snomedDesc:'Burning sensation of nasal mucosa',snomedCode:'249366005',ens6qDomain:'burning',severity:'moderate'}},
+    {kw:["too open","empty","cavernous","hollow"],term:{snomedDesc:'Paradoxical nasal patency',snomedCode:'N/A',ens6qDomain:'openness',severity:'moderate'}},
+    {kw:["crust","scab","dried mucus"],term:{snomedDesc:'Nasal mucosal crusting',snomedCode:'95319005',ens6qDomain:'crusting',severity:'mild'}},
+    {kw:["dry","dryness","no moisture","parched"],term:{snomedDesc:'Dryness of nasal mucosa',snomedCode:'11420004',ens6qDomain:'dryness',severity:'moderate'}},
+    {kw:["no airflow","can't feel air","feel every breath"],term:{snomedDesc:'Impaired nasal airflow sensation',snomedCode:'N/A',ens6qDomain:'air',severity:'moderate'}},
+    {kw:["couldn't sleep","can't sleep","woke up","poor sleep","tired"],term:{snomedDesc:'Sleep disturbance due to nasal symptoms',snomedCode:'193462001',ens6qDomain:'suffocation',severity:'moderate'}},
+    {kw:["stress","anxious","anxiety","worried"],term:{snomedDesc:'Anxiety-related symptom exacerbation',snomedCode:'48694002',ens6qDomain:'suffocation',severity:'moderate'}},
+    {kw:["better","improved","progress","relief"],term:{snomedDesc:'Symptomatic improvement noted',snomedCode:'N/A',ens6qDomain:'dryness',severity:'mild'}},
+  ];
+  rules.forEach(function(r){for(var i=0;i<r.kw.length;i++){if(text.indexOf(r.kw[i])!==-1){var idx=text.indexOf(r.kw[i]);var phrase=freeText.substring(Math.max(0,idx-15),Math.min(freeText.length,idx+r.kw[i].length+20)).trim();terms.push({patientPhrase:phrase,snomedDesc:r.term.snomedDesc,snomedCode:r.term.snomedCode,ens6qDomain:r.term.ens6qDomain,confidence:parseFloat((0.75+Math.random()*0.2).toFixed(2)),severity:r.term.severity});break;}}});
+  var sentiment='neutral';
+  var pos=['better','improved','good','great','hope','progress'];var neg=['terrible','worst','awful','miserable','unbearable','bad','flare'];
+  var pc=0,nc=0;pos.forEach(function(w){if(text.indexOf(w)!==-1)pc++;});neg.forEach(function(w){if(text.indexOf(w)!==-1)nc++;});
+  if(pc>nc)sentiment='positive';else if(nc>pc)sentiment='negative';else if(pc>0&&nc>0)sentiment='mixed';
+  return{mappedTerms:terms,overallSentiment:sentiment,keyInsight:terms.length?'Patient described '+terms.length+' symptom(s). Monitor closely.':'No specific symptoms mentioned.',uncertainTerms:terms.filter(function(t){return t.confidence<0.7;}),source:'mock',model:'keyword-matching-v1',timestamp:new Date().toISOString()};
+}
+</script>
+
+<!-- ════ GOAL ENGINE ════ -->
+<script>
+function computeAllGoalProgress(patientGoals,todayENS6Q,baselineENS6Q,checkins){
+  if(!patientGoals||!patientGoals.length)return{};
+  var result={};
+  patientGoals.forEach(function(goal){
+    var goalDef=GOAL_MAP[goal.key];
+    if(!goalDef)return;
+    result[goal.key]=computeSingleGoalProgress(goal,goalDef,todayENS6Q,baselineENS6Q,checkins);
+  });
+  return result;
+}
+function computeSingleGoalProgress(goal,goalDef,todayENS6Q,baselineENS6Q,checkins){
+  if(goal.key==='goalE')return _computeGoalEProgress(checkins);
+  var domains=goalDef.domains;
+  var baselineScore=_avgDomains(baselineENS6Q,domains);
+  var currentScore=_avgDomains(todayENS6Q,domains);
+  var targetScore=goalSliderToTarget(baselineScore,goal.target);
+  var progress,denom=baselineScore-targetScore;
+  if(denom===0){progress=currentScore<=baselineScore?100:0;}
+  else{progress=((baselineScore-currentScore)/denom)*100;}
+  progress=Math.max(-100,Math.min(200,Math.round(progress)));
+  var trend=computeTrend(checkins,domains);
+  var barrier=identifyBarrier(todayENS6Q,domains);
+  return{goalKey:goal.key,goalName:goal.name,progress:progress,currentScore:parseFloat(currentScore.toFixed(2)),targetScore:parseFloat(targetScore.toFixed(2)),baselineScore:parseFloat(baselineScore.toFixed(2)),trend:trend,barrier:barrier,status:_progressToStatus(progress)};
+}
+function computeTrend(checkins,domains){
+  if(!checkins||checkins.length<TRACKING.minDaysForTrend)return{direction:'insufficient_data',delta:0,description:'Need more data'};
+  var rc=Math.min(3,checkins.length),rs=0;
+  for(var i=0;i<rc;i++)rs+=_avgDomains(checkins[i].ens6q,domains);
+  var recentAvg=rs/rc;
+  var ps=Math.min(3,checkins.length-rc),prevSum=0;
+  if(ps===0)return{direction:'insufficient_data',delta:0,description:'Not enough prior data'};
+  for(var j=rc;j<rc+ps;j++)prevSum+=_avgDomains(checkins[j].ens6q,domains);
+  var prevAvg=prevSum/ps;
+  var delta=parseFloat((recentAvg-prevAvg).toFixed(2));
+  var dir=delta<-0.3?'improving':delta>0.3?'worsening':'stable';
+  return{direction:dir,delta:delta,recentAvg:parseFloat(recentAvg.toFixed(2)),previousAvg:parseFloat(prevAvg.toFixed(2)),description:dir};
+}
+function identifyBarrier(todayENS6Q,domains){
+  var maxD='',maxS=-1;
+  domains.forEach(function(k){var s=todayENS6Q[k]||0;if(s>maxS){maxS=s;maxD=k;}});
+  if(maxS<=0)return{domain:'none',domainName:'None',score:0,description:'All at zero!'};
+  var info=ENS_DOMAIN_MAP[maxD]||{name:maxD,shortName:maxD};
+  return{domain:maxD,domainName:info.shortName||info.name,score:maxS,description:(info.shortName||maxD)+' ('+maxS+'/5) is the primary barrier'};
+}
+function _computeGoalEProgress(checkins){
+  var count=checkins?checkins.length:0,target=TRACKING.initialWindowDays;
+  var progress=Math.min(100,Math.round((count/target)*100));
+  return{goalKey:'goalE',goalName:'Understand my symptom triggers',progress:progress,currentScore:count,targetScore:target,baselineScore:0,trend:{direction:'improving',delta:0,description:'Data collection ongoing'},barrier:{domain:'data',domainName:'More Data Needed',score:0,description:(target-count)+' more days for full insights'},status:count>=target?'complete':count>=TRACKING.minDaysForSignal?'partial_insights':'collecting'};
+}
+function getGoalSummary(goalProgress){
+  var keys=Object.keys(goalProgress);if(!keys.length)return{totalGoals:0,avgProgress:0,overallStatus:'no_goals'};
+  var total=0,best={key:'',progress:-Infinity},worst={key:'',progress:Infinity};
+  keys.forEach(function(k){var g=goalProgress[k];total+=g.progress;if(g.progress>best.progress)best={key:k,name:g.goalName,progress:g.progress};if(g.progress<worst.progress)worst={key:k,name:g.goalName,progress:g.progress,barrier:g.barrier};});
+  var avg=Math.round(total/keys.length);
+  return{totalGoals:keys.length,avgProgress:avg,bestGoal:best,worstGoal:worst,overallStatus:avg>=80?'on_track':avg>=40?'progressing':avg>=0?'early_stage':'regression'};
+}
+function _avgDomains(ens6q,domains){if(!ens6q||!domains||!domains.length)return 0;var s=0,c=0;domains.forEach(function(k){if(typeof ens6q[k]==='number'){s+=ens6q[k];c++;}});return c>0?s/c:0;}
+function _progressToStatus(p){if(p>=100)return'achieved';if(p>=75)return'almost_there';if(p>=50)return'good_progress';if(p>=25)return'early_progress';if(p>=0)return'just_starting';return'regression';}
+</script>
+
+<!-- ════ SIGNAL ENGINE ════ -->
+<script>
+function computeTriggerCorrelations(checkins){
+  if(!checkins||checkins.length<TRACKING.minDaysForSignal)return{hasEnoughData:false,checkinCount:checkins?checkins.length:0,insights:[],topTrigger:null,summary:'Need at least '+TRACKING.minDaysForSignal+' days of data.'};
+  var insights=[];
+  TRIGGERS.forEach(function(td){
+    var corr=_correlateOneTrigger(checkins,td.label);
+    if(corr.dayCount<TRACKING.minTriggerDays)return;
+    if(Math.abs(corr.delta)<CORRELATION_THRESHOLDS.moderate)return;
+    insights.push({trigger:td.key,label:td.label,avgWith:corr.avgWith,avgWithout:corr.avgWithout,delta:corr.delta,strength:_classifyStrength(corr.delta),dayCount:corr.dayCount,description:_buildDesc(td.label,corr)});
+  });
+  insights.sort(function(a,b){return Math.abs(b.delta)-Math.abs(a.delta);});
+  var top=insights.length>0?insights[0]:null;
+  return{hasEnoughData:true,checkinCount:checkins.length,insights:insights,topTrigger:top,summary:insights.length?'Identified '+insights.length+' trigger(s) from '+checkins.length+' days.':'No strong patterns found across '+checkins.length+' days.'};
+}
+function computeSleepCorrelation(checkins){
+  var poor=checkins.filter(function(c){return typeof c.sleepHours==='number'&&c.sleepHours<6;});
+  var good=checkins.filter(function(c){return typeof c.sleepHours==='number'&&c.sleepHours>=6;});
+  if(poor.length<2||good.length<2)return{hasPattern:false,description:'Not enough sleep data.'};
+  var pa=_avgTotal(poor),ga=_avgTotal(good),delta=parseFloat((pa-ga).toFixed(2));
+  return{poorSleepAvg:parseFloat(pa.toFixed(2)),goodSleepAvg:parseFloat(ga.toFixed(2)),delta:delta,hasPattern:Math.abs(delta)>=1.0,description:delta>1.0?'Poor sleep (<6h) associated with +'+delta.toFixed(1)+' higher ENS6Q score.':'Sleep duration shows no strong pattern.'};
+}
+function computeWeeklyTrend(checkins){
+  if(!checkins||checkins.length<7)return{direction:'insufficient_data',delta:0,thisWeekAvg:0,lastWeekAvg:0};
+  var tw=checkins.slice(0,7),lw=checkins.slice(7,14);
+  if(lw.length<3)return{direction:'insufficient_data',delta:0,thisWeekAvg:0,lastWeekAvg:0};
+  var ta=parseFloat(_avgTotal(tw).toFixed(2)),la=parseFloat(_avgTotal(lw).toFixed(2)),delta=parseFloat((ta-la).toFixed(2));
+  return{thisWeekAvg:ta,lastWeekAvg:la,delta:delta,direction:delta<-1?'improving':delta>1?'worsening':'stable'};
+}
+function _correlateOneTrigger(checkins,label){
+  var tw=checkins.filter(function(c){return _hasTrigger(c,label);});
+  var nw=checkins.filter(function(c){return !_hasTrigger(c,label);});
+  var aw=tw.length>0?_avgTotal(tw):0,an=nw.length>0?_avgTotal(nw):0;
+  return{dayCount:tw.length,avgWith:parseFloat(aw.toFixed(2)),avgWithout:parseFloat(an.toFixed(2)),delta:parseFloat((aw-an).toFixed(2))};
+}
+function _hasTrigger(c,label){if(!c.triggers||!c.triggers.length)return false;var cl=label.toLowerCase();return c.triggers.some(function(t){var tc=t.toLowerCase();return tc.indexOf(cl)!==-1||cl.indexOf(tc)!==-1;});}
+function _avgTotal(checkins){if(!checkins.length)return 0;var s=0;checkins.forEach(function(c){s+=typeof c.ens6qTotal==='number'?c.ens6qTotal:0;});return s/checkins.length;}
+function _classifyStrength(d){if(d>=CORRELATION_THRESHOLDS.strong)return'strong';if(d>=CORRELATION_THRESHOLDS.moderate)return'moderate';if(d<=-CORRELATION_THRESHOLDS.strong)return'strong_protective';if(d<=-CORRELATION_THRESHOLDS.moderate)return'moderate_protective';return'weak';}
+function _buildDesc(label,corr){return label+(corr.delta>0?' worsens':' may ease')+' symptoms by ~'+Math.abs(corr.delta).toFixed(1)+' pts ('+corr.avgWith.toFixed(1)+' with vs '+corr.avgWithout.toFixed(1)+' without).';}
+</script>
+
+<!-- ════ CALIBRATION ════ -->
+<script>
+var _calibrationState={checked:false,prompted:false,confirmed:false};
+async function checkCalibration(uid,profile){
+  if(_calibrationState.checked)return{triggered:false};
+  if(profile.baselineStatus==='calibrated'||profile.baselineStatus==='reviewed'){_calibrationState.checked=true;return{triggered:false};}
+  var r=await getCheckins(uid,CALIBRATION.minCheckins+5);
+  if(!r.success)return{triggered:false};
+  var checkins=r.data;
+  if(checkins.length<CALIBRATION.minCheckins)return{triggered:false};
+  _calibrationState.checked=true;
+  var result=runCalibration(checkins,profile.baselineENS6Q);
+  if(!result.needsUpdate)return{triggered:false};
+  _calibrationState.prompted=true;
+  return{triggered:true,calibResult:result};
+}
+function runCalibration(checkins,onboardingBaseline){
+  var cc=checkins.slice().reverse().slice(0,CALIBRATION.minCheckins);
+  var sums={};ENS_DOMAIN_KEYS.forEach(function(k){sums[k]=0;});
+  cc.forEach(function(c){ENS_DOMAIN_KEYS.forEach(function(k){if(c.ens6q&&typeof c.ens6q[k]==='number')sums[k]+=c.ens6q[k];});});
+  var nb={},nt=0;
+  ENS_DOMAIN_KEYS.forEach(function(k){var a=parseFloat((sums[k]/cc.length).toFixed(2));nb[k]=a;nt+=a;});
+  nt=parseFloat(nt.toFixed(2));
+  var diffs={},maxD=0,needsUpdate=false;
+  ENS_DOMAIN_KEYS.forEach(function(k){var ov=(onboardingBaseline&&typeof onboardingBaseline[k]==='number')?onboardingBaseline[k]:0,nv=nb[k],delta=parseFloat((nv-ov).toFixed(2));diffs[k]={old:ov,new:nv,delta:delta,domainName:(ENS_DOMAIN_MAP[k]||{shortName:k}).shortName};if(Math.abs(delta)>maxD)maxD=Math.abs(delta);if(Math.abs(delta)>CALIBRATION.domainThreshold)needsUpdate=true;});
+  return{newBaseline:nb,newBaselineTotal:nt,diffs:diffs,needsUpdate:needsUpdate,maxDelta:parseFloat(maxD.toFixed(2)),checkinCount:cc.length};
+}
+async function confirmCalibration(uid,nb,nt){_calibrationState.confirmed=true;return await updateBaseline(uid,{baselineENS6Q:nb,baselineTotal:nt,baselineStatus:'calibrated'});}
+async function skipCalibration(uid){_calibrationState.confirmed=true;return await updateProfile(uid,{baselineStatus:'reviewed'});}
+function buildCalibrationMessage(r){
+  var changed=Object.keys(r.diffs).filter(function(k){return Math.abs(r.diffs[k].delta)>CALIBRATION.domainThreshold;});
+  if(!changed.length)return'Your baseline looks accurate.';
+  var lines=['Based on your first '+r.checkinCount+' check-ins:',''];
+  changed.forEach(function(k){var d=r.diffs[k];lines.push('• '+d.domainName+': avg '+d.new+' vs initial '+d.old);});
+  lines.push('','Updating your baseline will improve accuracy.');
+  return lines.join('\n');
+}
+</script>
+
+<!-- ════ APP GLUE LAYER ════ -->
+<script>
+var APP={uid:null,profile:null,checkins:[],isLoading:false,isMockMode:false};
+
+document.addEventListener('DOMContentLoaded',function(){
+  APP.isMockMode=(typeof isFirebaseConfigured==='function')?!isFirebaseConfigured():true;
+  console.log('[App] PRANA init. Mock mode:',APP.isMockMode);
+  _wireAuthButtons();
+  _wireOnboardingNext();
+  _wireDoneButton();
+  _wireHomeCards();
+  _wireSignOut();
+});
+
+window.addEventListener('authStateChanged',async function(e){
+  var user=e.detail?e.detail.user:null;
+  if(user){APP.uid=user.uid;await _loadUserProfile(user.uid);}
+  else{APP.uid=null;APP.profile=null;APP.checkins=[];_resetFrontendD();}
+});
+
+function _wireAuthButtons(){
+  // Sign Up
+  var sb=document.getElementById('signup-btn');
+  if(sb)sb.addEventListener('click',async function(){
+    var emailEl=document.querySelector('#signup input[type=email]'),passEl=document.querySelector('#signup input[type=password]');
+    if(!emailEl||!passEl)return;
+    _setLoading(sb,'Creating account...');
+    var r=await signUp(emailEl.value.trim(),passEl.value);
+    _clearLoading(sb,'Sign Up');
+    if(r.success){APP.uid=r.uid;_clearError('signup');go('screen2');}
+    else _showError('signup',r.errorMessage);
+  });
+
+  // Log In
+  var lb=document.getElementById('login-btn');
+  if(lb)lb.addEventListener('click',async function(){
+    var emailEl=document.querySelector('#login input[type=email]'),passEl=document.querySelector('#login input[type=password]');
+    if(!emailEl||!passEl)return;
+    _setLoading(lb,'Signing in...');
+    var r=await logIn(emailEl.value.trim(),passEl.value);
+    _clearLoading(lb,'Log In');
+    if(r.success){
+      APP.uid=r.uid;_clearError('login');
+      await _loadUserProfile(r.uid);
+      go(APP.profile?'home':'screen2');
+    }else _showError('login',r.errorMessage);
+  });
+
+  // Google
+  var gb=document.querySelector('#signup .btn-secondary');
+  if(gb)gb.addEventListener('click',async function(){
+    _setLoading(gb,'Connecting...');
+    var r=await signInWithGoogle();
+    _clearLoading(gb,'Continue with Google');
+    if(r.success){APP.uid=r.uid;_clearError('signup');await _loadUserProfile(r.uid);go((r.isNewUser||!APP.profile)?'screen2':'home');}
+    else _showError('signup',r.errorMessage);
+  });
+
+  // Forgot password
+  var fp=document.querySelector('#login p[style*="cursor"]');
+  if(fp)fp.addEventListener('click',async function(){
+    var em=document.querySelector('#login input[type=email]');
+    var r=await sendPasswordReset(em?em.value.trim():'');
+    if(r.success)alert('Password reset email sent! Check your inbox.');
+    else _showError('login',r.errorMessage);
+  });
+}
+
+function _wireSignOut(){
+  var btn=document.getElementById('signout-btn');
+  if(!btn)return;
+  btn.addEventListener('click',async function(){
+    document.getElementById('settingsMenu').classList.remove('show');
+    await signOut();
+    APP.uid=null;APP.profile=null;APP.checkins=[];_resetFrontendD();
+    go('landing');
+  });
+}
+
+function _wireOnboardingNext(){
+  var btn=document.getElementById('screen5-next-btn');
+  if(!btn)return;
+  btn.addEventListener('click',async function(){
+    var pf=collectProfileFromUI(),bf=collectBaselineFromUI(),goals=collectGoalsFromUI();
+    var full=Object.assign({},pf,bf,{goals:goals,baselineStatus:'provisional'});
+    Object.assign(D,full);APP.profile=full;
+    if(APP.uid){
+      _setLoading(btn,'Saving...');
+      var r=await saveProfile(APP.uid,full);
+      _clearLoading(btn,'Next →');
+      if(!r.success)console.error('[App] Profile save failed:',r.errorMessage);
+    }
+    go('allset');
+  });
+}
+
+function _wireDoneButton(){
+  var btn=document.getElementById('done-btn');
+  if(!btn)return;
+  btn.addEventListener('click',async function(){
+    if(APP.isLoading)return;
+    APP.isLoading=true;_setLoading(btn,'Saving...');
+    try{await _runCheckinPipeline();}catch(e){console.error('[App] Pipeline error:',e);}
+    _clearLoading(btn,'Done ✓');APP.isLoading=false;
+    markLogged();go('home');
+  });
+}
+
+function _wireHomeCards(){
+  // Analytics card
+  var ac=document.getElementById('card-analytics');
+  if(ac)ac.addEventListener('click',function(){go('screen-insights');});
+  // Report card
+  var rc=document.getElementById('card-report');
+  if(rc)rc.addEventListener('click',function(){go('screen-report');});
+}
+
+async function _runCheckinPipeline(){
+  var data=collectCheckinFromUI();
+  console.log('[App] Check-in:',data.date,'| ENS6Q total:',data.ens6qTotal);
+  if(APP.uid){var sr=await saveCheckin(APP.uid,data);if(!sr.success){console.error('[App] saveCheckin failed:',sr.errorMessage);return;}}
+  var nlp=null;
+  if(data.freeText){try{nlp=await mapSymptomsToTerms(data.freeText,data.ens6q);}catch(e){console.error('[App] NLP error:',e);}}
+  var gp=null;
+  if(APP.profile&&APP.profile.goals&&APP.profile.baselineENS6Q){
+    try{gp=computeAllGoalProgress(APP.profile.goals,data.ens6q,APP.profile.baselineENS6Q,APP.checkins.slice(0,14));}catch(e){}
+  }
+  if(APP.uid&&(nlp||gp)){var patch={};if(nlp)patch.nlpOutput=nlp;if(gp)patch.goalProgress=gp;await updateCheckin(APP.uid,data.date,patch);}
+  APP.checkins.unshift(Object.assign({},data,{nlpOutput:nlp,goalProgress:gp}));
+  if(APP.checkins.length>28)APP.checkins=APP.checkins.slice(0,28);
+  if(APP.profile&&APP.uid){
+    var cc=await checkCalibration(APP.uid,APP.profile);
+    if(cc.triggered)setTimeout(function(){_showCalibPrompt(cc.calibResult);},800);
+  }
+}
+
+function _showCalibPrompt(r){
+  var msg=buildCalibrationMessage(r);
+  var ok=window.confirm('PRANA Baseline Update\n\n'+msg+'\n\nUpdate your baseline for better accuracy?');
+  if(!APP.uid)return;
+  if(ok)confirmCalibration(APP.uid,r.newBaseline,r.newBaselineTotal).then(function(){if(APP.profile){APP.profile.baselineENS6Q=r.newBaseline;APP.profile.baselineTotal=r.newBaselineTotal;APP.profile.baselineStatus='calibrated';}});
+  else skipCalibration(APP.uid);
+}
+
+async function _loadUserProfile(uid){
+  if(!uid)return;
+  var pr=await loadProfile(uid);
+  if(pr.success&&pr.data){
+    APP.profile=pr.data;_syncProfileToFrontend(APP.profile);
+    var cr=await getCheckins(uid,28);
+    if(cr.success)APP.checkins=cr.data;
+  }
+}
+
+function _syncProfileToFrontend(p){
+  if(!p||typeof D==='undefined')return;
+  D.name=p.name||'';D.age=p.age||'';D.gender=p.gender||'';D.phone=p.phone||'';
+  D.meds=p.meds||'';D.blood=p.blood||'';D.allergies=p.allergies||'';
+  D.caretaker=p.caretaker||'';D.subtype=p.subtype||'';D.surgery=p.surgery||'';
+}
+function _resetFrontendD(){if(typeof D==='undefined')return;D.name=D.age=D.gender=D.phone=D.meds=D.blood=D.allergies=D.caretaker=D.subtype=D.surgery='';}
+
+function _setLoading(btn,text){if(!btn)return;btn.disabled=true;btn._orig=btn.textContent;btn.textContent=text;}
+function _clearLoading(btn,text){if(!btn)return;btn.disabled=false;btn.textContent=text||btn._orig||'';}
+function _showError(sid,msg){_clearError(sid);var s=document.getElementById(sid);if(!s)return;var el=document.createElement('p');el.className='app-error';el.style.cssText='color:#c0392b;font-size:12px;text-align:center;margin-top:10px;padding:8px 12px;background:rgba(192,57,43,.08);border-radius:8px;';el.textContent=msg;var btn=s.querySelector('.btn-primary');if(btn)btn.parentNode.insertBefore(el,btn.nextSibling);}
+function _clearError(sid){var s=document.getElementById(sid);if(!s)return;var e=s.querySelector('.app-error');if(e)e.remove();}
+</script>
+
+<script>
+// ════════ PRANA FRONTEND CORE ════════
 const D={name:'',age:'',gender:'',phone:'',meds:'',blood:'',allergies:'',caretaker:'',subtype:'',surgery:''};
 let cur='splash', hasLogged=false;
 
 function go(id){
-  if(cur==='screen2')saveProfile();
+  if(cur==='screen2')_localSaveProfile();
   if(cur==='screen3'){D.surgery=document.getElementById('f-surgery').value;}
   const c=document.getElementById(cur),n=document.getElementById(id);
   c.classList.add('hidden');
@@ -501,7 +1118,20 @@ function go(id){
     if(id==='home')setupHome();
     if(id==='healthcard')setupHealthCard();
     if(id==='allset')launchConfetti();
+    if(id==='screen-insights')initInsights();
+    if(id==='screen-report')buildReport();
   },100);
+}
+
+function _localSaveProfile(){
+  D.name=document.getElementById('f-name').value||'Friend';
+  D.age=document.getElementById('f-age').value;
+  D.gender=document.getElementById('f-gender').value;
+  D.phone=document.getElementById('f-phone').value;
+  D.meds=document.getElementById('f-meds').value;
+  D.blood=document.getElementById('f-blood').value;
+  D.allergies=document.getElementById('f-allergies').value;
+  D.caretaker=document.getElementById('f-caretaker').value;
 }
 
 function goLog(){
@@ -528,17 +1158,6 @@ function checkLogReset(){
 }
 setInterval(checkLogReset,60000);
 
-function saveProfile(){
-  D.name=document.getElementById('f-name').value||'Friend';
-  D.age=document.getElementById('f-age').value;
-  D.gender=document.getElementById('f-gender').value;
-  D.phone=document.getElementById('f-phone').value;
-  D.meds=document.getElementById('f-meds').value;
-  D.blood=document.getElementById('f-blood').value;
-  D.allergies=document.getElementById('f-allergies').value;
-  D.caretaker=document.getElementById('f-caretaker').value;
-}
-
 function mkParticles(id){const c=document.getElementById(id);if(!c)return;for(let i=0;i<12;i++){const p=document.createElement('div');p.className='particle';const s=3+Math.random()*5;p.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;width:${s}px;height:${s}px;--p-op:${.1+Math.random()*.15};--dur:${4+Math.random()*5}s;--delay:${Math.random()*6}s;`;c.appendChild(p);}}
 ['p-splash','p-landing','p-allset','p-home'].forEach(mkParticles);
 
@@ -555,7 +1174,7 @@ const ENS6Q=[
   {key:'air',name:'Impaired Air Sensation',desc:'Inability to feel air moving through the nose'},
 ];
 
-const GOALS=[
+const GOALS_UI=[
   {key:'goalA',name:'Sleep without breathing distress',desc:'Rest through the night peacefully'},
   {key:'goalB',name:'Focus through work or study',desc:'Get through your day undistracted'},
   {key:'goalC',name:'Reduce daily nasal discomfort',desc:'Ease dryness, burning & crusting'},
@@ -590,7 +1209,7 @@ function updateSliderBg(el,min,max){const pct=((el.value-min)/(max-min))*100;el.
 function updateGoalBg(el){const pct=(el.value/5)*100;el.style.background=`linear-gradient(90deg,#52B788 ${pct}%,#E8DFD0 ${pct}%)`;}
 
 buildSliders('baseline-sliders',ENS6Q,true);
-buildGoalSliders('goal-sliders',GOALS);
+buildGoalSliders('goal-sliders',GOALS_UI);
 buildSliders('daily-sliders',ENS6Q,false);
 
 // init prox slider bg
@@ -640,6 +1259,16 @@ function setupHome(){
   document.getElementById('home-greeting-text').textContent=msg;
   document.getElementById('home-name').textContent=(D.name||'Friend');
   document.getElementById('settingsMenu').classList.remove('show');
+  // Sync check-in state from Firestore
+  if(typeof APP!=='undefined'&&APP.uid&&!hasLogged){
+    hasCheckedInToday(APP.uid).then(function(r){
+      if(r.hasCheckedIn){hasLogged=true;loggedDate=new Date().toDateString();
+        document.getElementById('card-log-title').textContent='Logged and reflected';
+        document.getElementById('card-log-desc').textContent='See you tomorrow for the next check-in';
+        document.getElementById('card-log').style.opacity='.7';
+      }
+    }).catch(function(){});
+  }
 }
 
 function setupHealthCard(){
@@ -672,6 +1301,577 @@ document.getElementById('phone').addEventListener('click',function(e){
   const menu=document.getElementById('settingsMenu');
   if(!e.target.closest('.settings-menu')&&!e.target.closest('button[onclick*="settingsMenu"]')){menu.classList.remove('show');}
 });
+
+// ================================================================
+// CLINICIAN REPORT SCREEN
+// ================================================================
+
+const RPT_IDX = Array.from({length:14},(_,i)=>i+14); // days 14–27
+const RPT_SNOMED = {
+  suffocation:'Nocturnal dyspnea / Nasal airflow obstruction',
+  burning:'Nasal mucosal inflammation',
+  openness:'Paradoxical nasal patency',
+  crusting:'Nasal crusting',
+  dryness:'Nasal mucosal dryness',
+  air:'Impaired nasal airflow sensation'
+};
+
+function buildReport(){
+  // Ensure real data is loaded into INS_ARCS if available
+  var hasRealData=typeof APP!=='undefined'&&APP.checkins&&APP.checkins.length>0;
+  if(hasRealData&&INS_COUNT<=1){_populateInsightsFromReal();}
+
+  var today=new Date();
+  var nDays=INS_COUNT;
+  var startDate=new Date(today); startDate.setDate(today.getDate()-(nDays-1));
+  var fmt=function(d){return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});};
+
+  // Patient info — real data takes priority over D (local profile store)
+  var patName =(APP&&APP.profile&&APP.profile.name)||D.name||'Patient';
+  var patSub  =(APP&&APP.profile&&APP.profile.subtype)||D.subtype||'ENS';
+  var patSurg =(APP&&APP.profile&&APP.profile.surgery)||D.surgery||'—';
+  var patMeds =(APP&&APP.profile&&APP.profile.meds)||D.meds||'—';
+  var patAllg =(APP&&APP.profile&&APP.profile.allergies)||D.allergies||'—';
+
+  // Averages over last 14 days (or all if fewer)
+  var rptN=Math.min(14,nDays);
+  var rptIdx=Array.from({length:rptN},function(_,i){return nDays-rptN+i;});
+  var avgMap={};
+  D_KEYS.forEach(function(d){avgMap[d]=+(rptIdx.reduce(function(s,i){return s+INS_ARCS[d][i];},0)/rptN).toFixed(2);});
+
+  // Trend indices
+  var last3N=Math.min(3,nDays);
+  var lastThree=Array.from({length:last3N},function(_,i){return nDays-last3N+i;});
+  var prev3N=Math.min(3,Math.max(0,nDays-3));
+  var prevThree=Array.from({length:prev3N},function(_,i){return Math.max(0,nDays-6)+i;});
+  function domTrend(doms){
+    var cur=doms.reduce(function(s,d){return s+lastThree.reduce(function(a,i){return a+INS_ARCS[d][i];},0)/lastThree.length;},0)/doms.length;
+    var prv=prevThree.length?doms.reduce(function(s,d){return s+prevThree.reduce(function(a,i){return a+INS_ARCS[d][i];},0)/prevThree.length;},0)/doms.length:null;
+    if(prv===null)return 'stable';
+    return cur<prv-0.3?'improving':cur>prv+0.3?'worsening':'stable';
+  }
+
+  // Totals
+  var totalBaseline=D_KEYS.reduce(function(s,d){return s+INS_BASELINE[d];},0);
+  var total14=+(D_KEYS.reduce(function(s,d){return s+avgMap[d];},0)).toFixed(1);
+  var totalDelta=parseFloat((total14-totalBaseline).toFixed(1));
+  var totalChange=(totalDelta>=0?'+':'')+totalDelta;
+
+  // Trigger deltas
+  var trigList=['A/C','Dry Air','Stress','Poor Sleep','Weather Change'];
+  var trigDeltas=[];
+  trigList.forEach(function(t){D_KEYS.forEach(function(d){
+    var wth=INS_TRIGGERS_RAW.map(function(ts,i){return ts.includes(t)?i:null;}).filter(function(v){return v!==null;});
+    var wout=INS_TRIGGERS_RAW.map(function(ts,i){return !ts.includes(t)?i:null;}).filter(function(v){return v!==null;});
+    if(!wth.length||!wout.length)return;
+    var delta=wth.reduce(function(s,i){return s+INS_ARCS[d][i];},0)/wth.length - wout.reduce(function(s,i){return s+INS_ARCS[d][i];},0)/wout.length;
+    if(delta>0.5)trigDeltas.push({t:t,d:d,delta:delta,wthDays:wth.length,
+      wthAvg:(wth.reduce(function(s,i){return s+INS_ARCS[d][i];},0)/wth.length).toFixed(1),
+      woutAvg:(wout.reduce(function(s,i){return s+INS_ARCS[d][i];},0)/wout.length).toFixed(1)});
+  });});
+  trigDeltas.sort(function(a,b){return b.delta-a.delta;});
+  var top3=trigDeltas.slice(0,3);
+
+  // Helpers
+  var arrowHtml=function(t){return t==='improving'?'<span style="color:#16A34A;font-weight:700;font-family:sans-serif;">↑ Improving</span>':t==='worsening'?'<span style="color:#DC2626;font-weight:700;font-family:sans-serif;">↓ Worsening</span>':'<span style="color:#6B7280;font-weight:700;font-family:sans-serif;">→ Stable</span>';};
+  var progBar=function(pct,trend){
+    var clr=trend==='improving'?'#16A34A':trend==='worsening'?'#DC2626':'#6B7280';
+    return '<div style="display:flex;align-items:center;gap:8px;margin:4px 0 6px;"><div style="flex:1;height:7px;background:#E5E7EB;border-radius:4px;overflow:hidden;"><div style="height:100%;width:'+pct+'%;background:'+clr+';border-radius:4px;"></div></div>'+arrowHtml(trend)+'</div>';
+  };
+  var domRow=function(d){
+    var avg=avgMap[d],base=INS_BASELINE[d];
+    var chg=(avg-base).toFixed(1);
+    var worse=avg>base;
+    return '<tr style="'+(worse?'background:#FEF2F2;':'')+'"><td style="padding:5px 6px;border-bottom:1px solid #E5E7EB;"><div style="font-size:11px;font-weight:700;color:#111;">'+D_NAMES[d]+'</div><div style="font-size:8px;color:#9CA3AF;font-style:italic;">'+RPT_SNOMED[d]+'</div></td><td style="padding:5px 6px;text-align:center;border-bottom:1px solid #E5E7EB;font-size:11px;font-family:sans-serif;">'+base+'</td><td style="padding:5px 6px;text-align:center;border-bottom:1px solid #E5E7EB;font-size:11px;font-family:sans-serif;">'+avg.toFixed(1)+'</td><td style="padding:5px 6px;text-align:center;border-bottom:1px solid #E5E7EB;font-size:11px;">'+(worse?'<span style="color:#DC2626;">+'+chg+'</span>':'<span style="color:#16A34A;">'+chg+'</span>')+'</td><td style="padding:5px 6px;text-align:center;border-bottom:1px solid #E5E7EB;font-size:13px;">'+(worse?'<span style="color:#DC2626;font-family:sans-serif;">↓</span>':'<span style="color:#16A34A;font-family:sans-serif;">↑</span>')+'</td></tr>';
+  };
+
+  // Goal section
+  var nonEGoals=INS_GOALS_DEF.filter(function(g){return g.domains!=='all'&&g.key!=='goalE'&&Array.isArray(g.domains)&&g.domains.length;});
+  var goalHtml='';
+  if(nonEGoals.length){
+    nonEGoals.slice(0,2).forEach(function(g,gi){
+      var doms=g.domains;
+      var base=doms.reduce(function(s,d){return s+INS_BASELINE[d];},0)/doms.length;
+      var cur=doms.reduce(function(s,d){return s+avgMap[d];},0)/doms.length;
+      var target=g.target||1.0;
+      var denom=base-target;
+      var pct=denom===0?100:Math.min(100,Math.round((base-cur)/denom*100));
+      var gTrend=domTrend(doms);
+      var barrierD=doms.reduce(function(a,b){return avgMap[a]>=avgMap[b]?a:b;});
+      goalHtml+='<div style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid #E5E7EB;"><p style="font-size:11.5px;font-weight:700;color:#111;margin:0 0 4px;">'+g.name+'</p>'+progBar(pct,gTrend)+'<p style="font-size:10px;color:#374151;margin:5px 0;line-height:1.6;">Based on '+rptN+' day'+(rptN!==1?'s':'')+' of data. Primary domain tracked: <em>'+RPT_SNOMED[barrierD]+'</em> (avg '+avgMap[barrierD].toFixed(1)+'/5). Current overall score for this goal: '+cur.toFixed(1)+'/5 vs baseline '+base.toFixed(1)+'/5.</p><p style="font-size:9.5px;color:#6B7280;font-style:italic;margin:5px 0 0;">Discussion: Review barrier domain with clinician. Are current management strategies adequately addressing '+D_NAMES[barrierD].toLowerCase()+'?</p></div>';
+    });
+  } else {
+    goalHtml='<p style="font-size:10px;color:#6B7280;">Complete goal setup during onboarding to see personalized goal progress here.</p>';
+  }
+
+  // MCID message
+  var mcidMsg='';
+  if(Math.abs(totalDelta)>=7){
+    mcidMsg='<b style="color:'+(totalDelta<0?'#16A34A':'#DC2626')+'">This patient has '+(totalDelta<0?'exceeded':'exceeded (worsening direction),')+' the MCID threshold (Δ '+totalChange+').</b>';
+  } else if(nDays<7){
+    mcidMsg='<span style="color:#6B7280;">Minimum 7 days required for MCID assessment. Currently '+nDays+' day'+(nDays!==1?'s':'')+' logged.</span>';
+  } else {
+    mcidMsg='<span style="color:#D97706;">Current Δ '+totalChange+' — MCID threshold (±7) not yet reached.</span>';
+  }
+
+  document.getElementById('report-print-area').innerHTML=
+    '<!-- HEADER -->'
+    +'<div style="display:flex;gap:10px;margin-bottom:14px;">'
+    +'<div style="flex:1.3;"><h1 style="font-size:17px;font-weight:700;color:#111;margin:0 0 4px;">'+patName+'</h1>'
+    +'<p style="font-size:10.5px;color:#374151;margin:0 0 2px;">Empty Nose Syndrome</p>'
+    +'<p style="font-size:10.5px;color:#374151;margin:0 0 2px;"><b>Subtype:</b> '+(patSub||'—')+'</p>'
+    +'<p style="font-size:10.5px;color:#374151;margin:0 0 2px;"><b>Surgery:</b> '+patSurg+'</p>'
+    +'<p style="font-size:10.5px;color:#374151;margin:0 0 2px;"><b>Meds:</b> '+patMeds+'</p>'
+    +'<p style="font-size:10.5px;color:#374151;margin:0;"><b>Allergies:</b> '+patAllg+'</p></div>'
+    +'<div style="flex:1;">'
+    +'<p style="font-size:9.5px;color:#374151;margin:0 0 2px;text-align:right;"><b>Generated:</b> '+fmt(today)+'</p>'
+    +'<p style="font-size:9.5px;color:#374151;margin:0 0 2px;text-align:right;"><b>Period:</b> '+fmt(startDate)+' – '+fmt(today)+'</p>'
+    +'<p style="font-size:9.5px;color:#374151;margin:0 0 10px;text-align:right;"><b>Logged:</b> '+nDays+' / '+nDays+' day'+(nDays!==1?'s':'')+'</p>'
+    +'<div style="border:1px solid #EF4444;border-radius:5px;padding:5px 7px;background:#FEF2F2;"><p style="font-size:8px;color:#DC2626;line-height:1.4;margin:0;">⚠ For informational purposes only. Does not constitute medical advice.</p></div>'
+    +'</div></div>'
+    +'<hr style="border:none;border-top:2px solid #111;margin-bottom:12px;">'
+    +'<p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#111;margin:0 0 10px;font-family:sans-serif;">1 — Goals &amp; Progress</p>'
+    +goalHtml
+    +'<hr style="border:none;border-top:1.5px solid #E5E7EB;margin-bottom:12px;">'
+    +'<p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#111;margin:0 0 8px;font-family:sans-serif;">2 — ENS6Q Summary ('+rptN+'-Day Average)</p>'
+    +'<table style="width:100%;border-collapse:collapse;margin-bottom:6px;"><thead><tr style="background:#F3F4F6;">'
+    +'<th style="padding:5px 6px;text-align:left;font-size:9px;color:#6B7280;border-bottom:2px solid #D1D5DB;font-family:sans-serif;font-weight:600;">Domain / Clinical Descriptor</th>'
+    +'<th style="padding:5px 4px;text-align:center;font-size:9px;color:#6B7280;border-bottom:2px solid #D1D5DB;font-family:sans-serif;font-weight:600;">Baseline</th>'
+    +'<th style="padding:5px 4px;text-align:center;font-size:9px;color:#6B7280;border-bottom:2px solid #D1D5DB;font-family:sans-serif;font-weight:600;">'+rptN+'-d Avg</th>'
+    +'<th style="padding:5px 4px;text-align:center;font-size:9px;color:#6B7280;border-bottom:2px solid #D1D5DB;font-family:sans-serif;font-weight:600;">Change</th>'
+    +'<th style="padding:5px 4px;text-align:center;font-size:9px;color:#6B7280;border-bottom:2px solid #D1D5DB;font-family:sans-serif;font-weight:600;">Trend</th>'
+    +'</tr></thead><tbody>'
+    +D_KEYS.map(function(d){return domRow(d);}).join('')
+    +'<tr style="background:#F3F4F6;">'
+    +'<td style="padding:5px 6px;font-size:11px;font-weight:700;color:#111;font-family:sans-serif;">Total ENS6Q</td>'
+    +'<td style="padding:5px 4px;text-align:center;font-size:11px;font-weight:700;font-family:sans-serif;">'+totalBaseline+'</td>'
+    +'<td style="padding:5px 4px;text-align:center;font-size:11px;font-weight:700;font-family:sans-serif;">'+total14+'</td>'
+    +'<td style="padding:5px 4px;text-align:center;font-size:11px;font-weight:700;">'+(totalDelta<=0?'<span style="color:#16A34A;">'+totalChange+'</span>':'<span style="color:#DC2626;">'+totalChange+'</span>')+'</td>'
+    +'<td style="padding:5px 4px;text-align:center;font-size:14px;">'+(totalDelta<=0?'<span style="color:#16A34A;">↑</span>':'<span style="color:#DC2626;">↓</span>')+'</td>'
+    +'</tr></tbody></table>'
+    +'<p style="font-size:8.5px;color:#6B7280;font-style:italic;margin:0 0 12px;">MCID: A change of ≥7 points on total ENS6Q represents a clinically meaningful improvement. '+mcidMsg+'</p>'
+    +'<hr style="border:none;border-top:1.5px solid #E5E7EB;margin-bottom:12px;">'
+    +'<p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#111;margin:0 0 8px;font-family:sans-serif;">3 — Key Trigger Insights</p>'
+    +(top3.length?top3.map(function(tr,i){return '<p style="font-size:10px;color:#374151;margin:0 0 7px;line-height:1.65;">'+(i+1)+'. <b>'+tr.t+'</b> exposure was associated with elevated <em>'+RPT_SNOMED[tr.d]+'</em>: avg '+tr.wthAvg+'/5 on trigger days vs '+tr.woutAvg+'/5 on other days (Δ +'+tr.delta.toFixed(1)+', reported on '+tr.wthDays+' of '+nDays+' days).</p>';}).join(''):'<p style="font-size:10px;color:#6B7280;">'+(nDays<7?'Insufficient data for trigger analysis — minimum 7 days required.':'No strong trigger correlations detected yet. Keep logging daily!')+'</p>')
+    +'<div style="margin-top:16px;padding-top:8px;border-top:1px solid #E5E7EB;"><p style="font-size:8px;color:#9CA3AF;text-align:center;line-height:1.5;font-family:sans-serif;">This report is for informational purposes only and does not constitute medical advice. Generated by RareSignal (PRANA). Report period: '+fmt(startDate)+' to '+fmt(today)+'.</p></div>';
+}
+
+function downloadReport(){
+  const el=document.getElementById('report-print-area');
+  const today=new Date().toISOString().slice(0,10);
+  const btn=document.getElementById('report-dl-btn');
+  btn.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/></svg> Generating…';
+  btn.disabled=true;
+  const opt={
+    margin:[12,10,12,10],
+    filename:'RareSignal_Report_'+today+'.pdf',
+    image:{type:'jpeg',quality:0.98},
+    html2canvas:{scale:2,useCORS:true,logging:false},
+    jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}
+  };
+  html2pdf().set(opt).from(el).save().then(()=>{
+    btn.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg> Download PDF';
+    btn.disabled=false;
+  });
+}
+
+// ================================================================
+// INSIGHTS & PATTERNS SCREEN
+// ================================================================
+
+// ── Demo data (DEMO_MEERA arcs, 28 days) ────────────────────────
+const INS_BASELINE = {suffocation:3,burning:3,openness:4,crusting:2,dryness:4,air:3};
+let INS_GOALS_DEF = [
+  {key:'goalA',name:'Sleep without breathing distress',domains:['suffocation','dryness'],target:1.0},
+  {key:'goalC',name:'Reduce daily nasal discomfort',   domains:['burning','crusting','dryness'],target:1.0},
+  {key:'goalE',name:'Understand my symptom triggers',  domains:'all',target:null},
+];
+const INS_ARCS = {
+  suffocation:[3,3,3,3,2,2,2,3,2,2, 4,3,2,2,2,2,1,1,1,3, 2,1,1,1,1,1,1,0],
+  burning:    [3,3,2,3,2,2,2,2,2,2, 3,2,2,2,1,1,1,1,1,2, 1,1,1,1,1,0,1,0],
+  openness:   [4,4,3,3,3,3,3,3,3,2, 4,3,3,2,2,2,2,2,2,3, 2,2,2,1,1,1,1,1],
+  crusting:   [2,2,2,2,2,1,1,2,1,1, 3,2,1,1,1,1,1,1,1,2, 1,1,1,1,0,0,0,0],
+  dryness:    [4,4,3,3,3,3,3,2,2,2, 4,3,3,2,2,2,2,1,1,3, 2,1,1,1,1,1,1,1],
+  air:        [3,3,3,2,2,2,2,2,2,2, 3,2,2,2,2,1,1,1,1,2, 1,1,1,1,1,1,0,0],
+};
+const INS_TRIGGERS_RAW = [
+  ['A/C','Dry Air'],['Dry Air'],['A/C'],['Dry Air','Stress'],[],['A/C'],['Dry Air'],[],['A/C','Dry Air'],['Dry Air'],
+  ['Stress','Poor Sleep','A/C'],['A/C','Dry Air'],['Dry Air'],[],['A/C'],[],['Dry Air'],[],['A/C'],['Stress','Weather Change'],
+  ['A/C'],[],['Dry Air'],[],[],['A/C'],[],[],
+];
+const INS_SLEEP = [5.5,6,6,6.5,6.5,7,7,6.5,7,7, 4.5,6,6.5,7,7,7.5,7.5,7.5,7,5, 7,7.5,7.5,8,7.5,8,7.5,8];
+var INS_COUNT = 28;     // updated by _populateInsightsFromReal()
+var INS_TODAY_IDX = 27; // INS_COUNT - 1
+const D_KEYS  = ['suffocation','burning','openness','crusting','dryness','air'];
+const D_NAMES = {suffocation:'Suffocation',burning:'Burning',openness:'Openness',crusting:'Crusting',dryness:'Dryness',air:'Impaired Air'};
+const D_COLORS= {suffocation:'#EF4444',burning:'#F97316',openness:'#EAB308',crusting:'#84CC16',dryness:'#06B6D4',air:'#8B5CF6'};
+
+let insTab='daily', insChartObj=null;
+
+// ── Init ─────────────────────────────────────────────────────────
+function initInsights(){
+  var hasRealData=typeof APP!=='undefined'&&APP.checkins&&APP.checkins.length>0;
+  if(hasRealData){
+    _populateInsightsFromReal();
+    _updateInsightsHeader();
+    _adjustInsightsTabs(APP.checkins.length);
+  }
+  switchInsTab('daily');
+  renderInsFlare();
+}
+
+function _populateInsightsFromReal(){
+  var checkins=APP.checkins.slice().reverse(); // oldest first
+  INS_COUNT=checkins.length;
+  INS_TODAY_IDX=INS_COUNT-1;
+  // Reset arc arrays
+  D_KEYS.forEach(function(d){INS_ARCS[d].length=0;});
+  INS_TRIGGERS_RAW.length=0;
+  INS_SLEEP.length=0;
+  // Fill from real check-ins
+  checkins.forEach(function(ci){
+    var ens=ci.ens6q||{};
+    D_KEYS.forEach(function(d){INS_ARCS[d].push(typeof ens[d]==='number'?ens[d]:0);});
+    INS_TRIGGERS_RAW.push(Array.isArray(ci.triggers)?ci.triggers:[]);
+    var h=ci.sleep?(parseFloat(ci.sleep.hours||0)+parseFloat(ci.sleep.minutes||0)/60):0;
+    INS_SLEEP.push(parseFloat(h.toFixed(1)));
+  });
+  // Update baseline from profile
+  var bl=(APP.profile&&APP.profile.baselineENS6Q)||{};
+  D_KEYS.forEach(function(d){if(typeof bl[d]==='number')INS_BASELINE[d]=bl[d];});
+  // Update goal definitions from profile
+  var profGoals=APP.profile&&APP.profile.goals;
+  if(profGoals&&profGoals.length){
+    var newDefs=profGoals.map(function(g){
+      var gDef=(typeof GOAL_MAP!=='undefined'&&GOAL_MAP[g.key])||{};
+      return {key:g.key,name:g.name||gDef.name||g.key,domains:gDef.domains||[],target:1.0};
+    }).filter(function(g){return (Array.isArray(g.domains)&&g.domains.length)||g.key==='goalE';});
+    if(!newDefs.length)newDefs=[{key:'goalE',name:'Understand my symptom triggers',domains:'all',target:null}];
+    INS_GOALS_DEF.length=0;
+    newDefs.forEach(function(g){INS_GOALS_DEF.push(g);});
+  }
+}
+
+function _updateInsightsHeader(){
+  var name=(APP.profile&&APP.profile.name)||D.name||'Patient';
+  var days=APP.checkins.length;
+  var sub=(APP.profile&&APP.profile.subtype)||'ENS';
+  var el=document.getElementById('ins-header-sub');
+  if(el)el.textContent=name+' · '+days+' day'+(days!==1?'s':'')+' · '+sub;
+  var badge=document.getElementById('ins-demo-badge');
+  if(badge)badge.style.display='none';
+}
+
+function _adjustInsightsTabs(count){
+  var w=document.querySelector('.itab[data-t="weekly"]');
+  var m=document.querySelector('.itab[data-t="monthly"]');
+  if(w)w.style.display=count>=7?'':'none';
+  if(m)m.style.display=count>=14?'':'none';
+}
+
+function switchInsTab(tab){
+  insTab=tab;
+  document.querySelectorAll('.itab').forEach(b=>{
+    const on=b.dataset.t===tab;
+    b.style.background=on?'rgba(255,255,255,.9)':'transparent';
+    b.style.color=on?'#2D6A4F':'rgba(255,255,255,.65)';
+  });
+  renderInsGoals();
+  renderInsChart();
+  renderInsCards();
+  renderInsTriggers();
+  renderInsMomentum();
+}
+
+// ── Helpers ──────────────────────────────────────────────────────
+function insAvg(idxArr,domain){
+  return idxArr.reduce((s,i)=>s+INS_ARCS[domain][i],0)/idxArr.length;
+}
+function insDomainGroupAvg(idxArr,domains){
+  return domains.reduce((s,d)=>s+insAvg(idxArr,d),0)/domains.length;
+}
+function insTriggerDelta(trigger,domain){
+  const wth=INS_TRIGGERS_RAW.map((ts,i)=>ts.includes(trigger)?i:null).filter(v=>v!==null);
+  const wout=INS_TRIGGERS_RAW.map((ts,i)=>!ts.includes(trigger)?i:null).filter(v=>v!==null);
+  if(!wth.length||!wout.length)return 0;
+  return insAvg(wth,domain)-insAvg(wout,domain);
+}
+
+// ── Flare Alert ──────────────────────────────────────────────────
+function renderInsFlare(){
+  var el=document.getElementById('ins-flare');
+  var flare=null;
+  var todayIdx=INS_TODAY_IDX;
+  var prevIdx=todayIdx-1;
+  if(INS_ARCS[D_KEYS[0]]&&INS_ARCS[D_KEYS[0]].length>todayIdx){
+    D_KEYS.forEach(function(d){
+      var s1=INS_ARCS[d][todayIdx];
+      var s2=prevIdx>=0?INS_ARCS[d][prevIdx]:s1;
+      if(!flare&&s1>=4&&s2>=4)flare={domain:D_NAMES[d],avg:((s1+s2)/2).toFixed(1)};
+    });
+    if(!flare){
+      D_KEYS.forEach(function(d){
+        if(!flare&&INS_ARCS[d][todayIdx]>=4)flare={domain:D_NAMES[d],avg:INS_ARCS[d][todayIdx].toFixed(1)};
+      });
+    }
+  }
+  el.style.display='block';
+  if(flare){
+    el.innerHTML='<div style="background:#FEF2F2;border:1.5px solid #EF4444;border-radius:12px;padding:10px 14px;display:flex;gap:10px;align-items:center;margin-bottom:2px;"><span style="font-size:16px;">⚠️</span><div><p style="font-size:11px;font-weight:700;color:#991B1B;">Active flare: '+flare.domain+' at '+flare.avg+'/5</p><p style="font-size:10px;color:#DC2626;">Elevated for consecutive days — consider consulting your clinician.</p></div></div>';
+  } else {
+    var msg=INS_COUNT>1?'Monitoring continues.':'Day 1 baseline established — keep logging!';
+    el.innerHTML='<div style="background:#D1FAE5;border:1.5px solid #34D399;border-radius:12px;padding:10px 14px;display:flex;gap:10px;align-items:center;margin-bottom:2px;"><span style="font-size:16px;">✅</span><div><p style="font-size:11px;font-weight:700;color:#065F46;">No active flare — all scores in safe range</p><p style="font-size:10px;color:#047857;">'+msg+'</p></div></div>';
+  }
+}
+
+// ── Goal Progress ─────────────────────────────────────────────────
+function renderInsGoals(){
+  var n=INS_COUNT;
+  var allIdx=Array.from({length:n},function(_,i){return i;});
+  var wkN=Math.min(7,n);
+  var weekIdx=Array.from({length:wkN},function(_,i){return n-wkN+i;});
+  var idxMap={daily:[INS_TODAY_IDX],weekly:weekIdx,monthly:allIdx};
+  var idx=idxMap[insTab];
+  var last3N=Math.min(3,n);
+  var lastThree=Array.from({length:last3N},function(_,i){return n-last3N+i;});
+  var prev3N=Math.min(3,Math.max(0,n-3));
+  var prevThree=Array.from({length:prev3N},function(_,i){return Math.max(0,n-6)+i;});
+  var html='';
+  INS_GOALS_DEF.forEach(function(g){
+    if(g.domains==='all'||g.key==='goalE'){
+      var daysLogged=n;
+      var pct=Math.min(100,Math.round(daysLogged/14*100));
+      var pairs=0;
+      var trigList=['A/C','Dry Air','Stress','Poor Sleep','Weather Change'];
+      trigList.forEach(function(t){D_KEYS.forEach(function(d){if(insTriggerDelta(t,d)>0.5)pairs++;});});
+      html+='<div style="background:#fff;border-radius:14px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.04);"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;"><p style="font-size:12px;font-weight:600;color:#1B4332;flex:1;padding-right:8px;line-height:1.35;">'+g.name+'</p><span style="font-size:18px;font-weight:700;color:#2D6A4F;white-space:nowrap;">'+pairs+' <span style="font-size:10px;color:#999;font-weight:400;">pairs</span></span></div><div style="height:6px;background:#E8DFD0;border-radius:3px;margin-bottom:6px;overflow:hidden;"><div style="height:100%;width:'+pct+'%;background:linear-gradient(90deg,#2D6A4F,#52B788);border-radius:3px;"></div></div><p style="font-size:10px;color:#6B7C6E;">'+daysLogged+' day'+(daysLogged!==1?'s':'')+' logged'+(pairs?' · '+pairs+' trigger pair'+(pairs!==1?'s':'')+' found':' · Keep logging!')+' </p></div>';
+      return;
+    }
+    var domains=Array.isArray(g.domains)?g.domains:[];
+    if(!domains.length)return;
+    var baseline=domains.reduce(function(s,d){return s+INS_BASELINE[d];},0)/domains.length;
+    var current=insDomainGroupAvg(idx,domains);
+    var target=g.target||1.0;
+    var denom=baseline-target;
+    var pct=denom===0?100:Math.round((baseline-current)/denom*100);
+    var cappedBar=Math.min(100,Math.max(0,pct));
+    var cur3=lastThree.length?insDomainGroupAvg(lastThree,domains):current;
+    var prv3=prevThree.length?insDomainGroupAvg(prevThree,domains):baseline;
+    var diff=cur3-prv3;
+    var trend=diff<-0.3?'improving':diff>0.3?'worsening':'stable';
+    var arrow=trend==='improving'?'↑':trend==='worsening'?'↓':'→';
+    var arrowClr=trend==='improving'?'#16A34A':trend==='worsening'?'#DC2626':'#6B7280';
+    var pctLabel=pct>=100?'🎉 Target exceeded!':pct<0?'⚠️ Below baseline':(Math.min(pct,100))+'% to goal';
+    var barrierD=domains.reduce(function(a,b){return (INS_ARCS[a]&&INS_ARCS[b]&&INS_ARCS[a][INS_TODAY_IDX]>=INS_ARCS[b][INS_TODAY_IDX])?a:b;});
+    var barrierScore=INS_ARCS[barrierD]?INS_ARCS[barrierD][INS_TODAY_IDX]||0:0;
+    var showBarrier=(trend!=='improving')&&pct<100;
+    html+='<div style="background:#fff;border-radius:14px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.04);"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;"><p style="font-size:12px;font-weight:600;color:#1B4332;flex:1;padding-right:8px;line-height:1.35;">'+g.name+'</p><div style="text-align:right;white-space:nowrap;"><span style="font-size:20px;font-weight:700;color:#2D6A4F;">'+Math.min(pct,100)+'%</span><span style="font-size:15px;margin-left:2px;color:'+arrowClr+';font-weight:700;">'+arrow+'</span></div></div><div style="height:6px;background:#E8DFD0;border-radius:3px;margin-bottom:6px;overflow:hidden;"><div style="height:100%;width:'+cappedBar+'%;background:linear-gradient(90deg,#2D6A4F,#52B788);border-radius:3px;transition:width .5s;"></div></div><div style="display:flex;justify-content:space-between;"><span style="font-size:10px;color:'+(pct>=100?'#16A34A':'#6B7C6E')+';">'+pctLabel+'</span><span style="font-size:10px;color:#999;">Now: '+current.toFixed(1)+'/5</span></div>'+(showBarrier?'<div style="margin-top:8px;background:#FEF3C7;border-radius:8px;padding:6px 10px;"><p style="font-size:10px;color:#92400E;">⚠️ Barrier: '+D_NAMES[barrierD]+' ('+barrierScore+'/5) may be limiting progress</p></div>':'')+'</div>';
+  });
+  document.getElementById('ins-goals').innerHTML=html;
+}
+
+// ── ENS6Q Chart ───────────────────────────────────────────────────
+function renderInsChart(){
+  if(insChartObj){insChartObj.destroy();insChartObj=null;}
+  var canvas=document.getElementById('ins-chart');
+  var ctx=canvas.getContext('2d');
+  var legendEl=document.getElementById('ins-chart-legend');
+  var n=INS_COUNT;
+
+  if(insTab==='daily'){
+    document.getElementById('ins-chart-title').textContent='Today vs Baseline';
+    document.getElementById('ins-chart-sub').textContent='All 6 domains';
+    insChartObj=new Chart(ctx,{type:'bar',data:{
+      labels:['Suf','Burn','Open','Crust','Dry','Air'],
+      datasets:[
+        {label:'Today',data:D_KEYS.map(function(d){return INS_ARCS[d][INS_TODAY_IDX]||0;}),backgroundColor:D_KEYS.map(function(d){return D_COLORS[d]+'CC';}),borderRadius:4},
+        {label:'Baseline',data:D_KEYS.map(function(d){return INS_BASELINE[d];}),backgroundColor:'#94A3B855',borderRadius:4}
+      ]},options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false}},
+        scales:{y:{min:0,max:5,ticks:{stepSize:1,font:{size:9}},grid:{color:'#E8DFD044'}},x:{ticks:{font:{size:9}},grid:{display:false}}}}
+    });
+    legendEl.innerHTML='<span style="display:flex;align-items:center;gap:4px;font-size:9px;color:#555;"><span style="width:10px;height:10px;border-radius:2px;background:#2D6A4FAA;display:inline-block;"></span>Today</span>'
+      +'<span style="display:flex;align-items:center;gap:4px;font-size:9px;color:#555;"><span style="width:10px;height:10px;border-radius:2px;background:#94A3B855;display:inline-block;"></span>Baseline</span>';
+  } else if(insTab==='weekly'){
+    document.getElementById('ins-chart-title').textContent='Last 7 Days';
+    document.getElementById('ins-chart-sub').textContent='6 symptom domains';
+    var wkN=Math.min(7,n);
+    var days7=Array.from({length:wkN},function(_,i){return n-wkN+i;});
+    var labels7=days7.map(function(i){return 'D'+(i+1);});
+    var wkBaselineAvg=+(D_KEYS.reduce(function(s,d){return s+INS_BASELINE[d];},0)/D_KEYS.length).toFixed(2);
+    var wkBaselineDataset={label:'Baseline Avg',data:Array(wkN).fill(wkBaselineAvg),
+      borderColor:'#94A3B8',backgroundColor:'transparent',borderWidth:2,borderDash:[6,4],
+      pointRadius:0,fill:false,tension:0,order:-1};
+    insChartObj=new Chart(ctx,{type:'line',data:{
+      labels:labels7,
+      datasets:[wkBaselineDataset].concat(D_KEYS.map(function(d){return {label:D_NAMES[d],data:days7.map(function(i){return INS_ARCS[d][i]||0;}),
+        borderColor:D_COLORS[d],backgroundColor:'transparent',fill:false,borderWidth:2,pointRadius:3,pointBackgroundColor:D_COLORS[d],tension:0.3};}))
+    },options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{filter:function(item){return item.datasetIndex>0;}}},
+      scales:{y:{min:0,max:5,ticks:{stepSize:1,font:{size:9}},grid:{color:'#E8DFD044'}},x:{ticks:{font:{size:9}},grid:{display:false}}}}
+    });
+    legendEl.innerHTML='<span style="display:flex;align-items:center;gap:3px;font-size:9px;color:#94A3B8;"><span style="width:14px;height:2px;border-top:2px dashed #94A3B8;display:inline-block;"></span>Baseline avg ('+wkBaselineAvg+')</span>'
+      +D_KEYS.map(function(d){return '<span style="display:flex;align-items:center;gap:3px;font-size:9px;color:#555;"><span style="width:8px;height:8px;border-radius:50%;background:'+D_COLORS[d]+';display:inline-block;"></span>'+D_NAMES[d]+'</span>';}).join('');
+  } else {
+    document.getElementById('ins-chart-title').textContent='Monthly Arc';
+    document.getElementById('ins-chart-sub').textContent='Weekly averages';
+    var numWeeks=Math.min(4,Math.ceil(n/7));
+    var weeks=[];
+    for(var wi=0;wi<numWeeks;wi++){var s=wi*7,e=Math.min(s+6,n-1);weeks.push([s,e]);}
+    var wkLabels=weeks.map(function(_,i){return 'Week '+(i+1);});
+    var baselineAvg=+(D_KEYS.reduce(function(s,d){return s+INS_BASELINE[d];},0)/D_KEYS.length).toFixed(2);
+    var domainDatasets=D_KEYS.map(function(d){return {label:D_NAMES[d],
+      data:weeks.map(function(r){var cnt=r[1]-r[0]+1;return +(Array.from({length:cnt},function(_,i){return INS_ARCS[d][r[0]+i]||0;}).reduce(function(s,v){return s+v;},0)/cnt).toFixed(2);}),
+      borderColor:D_COLORS[d],backgroundColor:'transparent',fill:false,borderWidth:2,pointRadius:4,pointBackgroundColor:D_COLORS[d],tension:0.4};});
+    var baselineDataset={label:'Baseline Avg',data:weeks.map(function(){return baselineAvg;}),
+      borderColor:'#94A3B8',backgroundColor:'transparent',borderWidth:2,borderDash:[6,4],
+      pointRadius:0,fill:false,tension:0,order:-1};
+    insChartObj=new Chart(ctx,{type:'line',data:{
+      labels:wkLabels,
+      datasets:[baselineDataset].concat(domainDatasets)
+    },options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{filter:function(item){return item.datasetIndex>0;}}},
+      scales:{y:{min:0,max:5,ticks:{stepSize:1,font:{size:9}},grid:{color:'#E8DFD044'}},x:{ticks:{font:{size:9}},grid:{display:false}}}}
+    });
+    legendEl.innerHTML='<span style="display:flex;align-items:center;gap:3px;font-size:9px;color:#94A3B8;"><span style="width:14px;height:2px;border-top:2px dashed #94A3B8;display:inline-block;"></span>Baseline avg ('+baselineAvg+')</span>'
+      +D_KEYS.map(function(d){return '<span style="display:flex;align-items:center;gap:3px;font-size:9px;color:#555;"><span style="width:8px;height:8px;border-radius:2px;background:'+D_COLORS[d]+';display:inline-block;"></span>'+D_NAMES[d]+'</span>';}).join('');
+  }
+}
+
+// ── Insights Row (3 cards) ────────────────────────────────────────
+function renderInsCards(){
+  var trigList=['A/C','Dry Air','Stress','Poor Sleep','Weather Change'];
+  var topT='—',topD='dryness',topDelta=0;
+  trigList.forEach(function(t){D_KEYS.forEach(function(d){
+    var delta=insTriggerDelta(t,d);
+    if(delta>topDelta){topDelta=delta;topT=t;topD=d;}
+  });});
+  // Sleep link
+  var lastNight=INS_SLEEP.length?INS_SLEEP[INS_TODAY_IDX]:0;
+  var sleepCorr='0.0';
+  if(INS_SLEEP.length>1){
+    var avgSleep=INS_SLEEP.reduce(function(a,b){return a+b;})/INS_SLEEP.length;
+    var shortIdx=INS_SLEEP.map(function(s,i){return s<avgSleep?i:null;}).filter(function(v){return v!==null;});
+    var longIdx=INS_SLEEP.map(function(s,i){return s>=avgSleep?i:null;}).filter(function(v){return v!==null;});
+    var sufShort=shortIdx.length?insAvg(shortIdx,'suffocation'):0;
+    var sufLong=longIdx.length?insAvg(longIdx,'suffocation'):0;
+    sleepCorr=(sufShort-sufLong).toFixed(1);
+  }
+  // Best day pattern
+  var best5Cnt=Math.min(5,INS_COUNT);
+  var dayTotals=Array.from({length:INS_COUNT},function(_,i){return {i:i,t:D_KEYS.reduce(function(s,d){return s+INS_ARCS[d][i];},0)};});
+  dayTotals.sort(function(a,b){return a.t-b.t;});
+  var best5=dayTotals.slice(0,best5Cnt).map(function(x){return x.i;});
+  var sleep7=best5.filter(function(i){return INS_SLEEP[i]>=7;}).length;
+  var noAC=best5.filter(function(i){return INS_TRIGGERS_RAW[i]&&!INS_TRIGGERS_RAW[i].includes('A/C');}).length;
+  document.getElementById('ins-cards-row').innerHTML=
+    '<div style="background:#fff;border-radius:14px;padding:10px;box-shadow:0 2px 8px rgba(0,0,0,.04);">'
+    +'<p style="font-size:9px;font-weight:700;color:#6B7C6E;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Top Trigger</p>'
+    +'<p style="font-size:18px;margin-bottom:4px;">💨</p>'
+    +'<p style="font-size:11px;font-weight:600;color:#1B4332;margin-bottom:3px;">'+(topDelta>0?topT:'None yet')+'</p>'
+    +'<p style="font-size:9px;color:#6B7C6E;">'+(topDelta>0?'+'+topDelta.toFixed(1)+' on '+D_NAMES[topD]:'Log triggers to see patterns')+'</p></div>'
+    +'<div style="background:#fff;border-radius:14px;padding:10px;box-shadow:0 2px 8px rgba(0,0,0,.04);">'
+    +'<p style="font-size:9px;font-weight:700;color:#6B7C6E;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Sleep Link</p>'
+    +'<p style="font-size:18px;margin-bottom:4px;">😴</p>'
+    +'<p style="font-size:11px;font-weight:600;color:#1B4332;margin-bottom:3px;">'+lastNight+'h last night</p>'
+    +'<p style="font-size:9px;color:#6B7C6E;">'+(INS_COUNT>2&&parseFloat(sleepCorr)>0?'Short sleep → +'+sleepCorr+' suffocation':'Keep logging for sleep insights')+'</p></div>'
+    +'<div style="background:#fff;border-radius:14px;padding:10px;box-shadow:0 2px 8px rgba(0,0,0,.04);">'
+    +'<p style="font-size:9px;font-weight:700;color:#6B7C6E;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Best Day</p>'
+    +'<p style="font-size:18px;margin-bottom:4px;">🌿</p>'
+    +'<p style="font-size:11px;font-weight:600;color:#1B4332;margin-bottom:3px;">'+(INS_COUNT>=3?sleep7+'/'+best5Cnt+' best days: 7+ h sleep':'Log more days')+'</p>'
+    +'<p style="font-size:9px;color:#6B7C6E;">'+(INS_COUNT>=3?noAC+'/'+best5Cnt+' had no A/C':'Pattern building...')+'</p></div>';
+}
+
+// ── Trigger Correlation ───────────────────────────────────────────
+function renderInsTriggers(){
+  var el=document.getElementById('ins-triggers');
+  var trigList=['A/C','Dry Air','Stress','Poor Sleep','Weather Change'];
+  var n=INS_COUNT;
+
+  if(insTab==='daily'){
+    var todayTrigs=INS_TRIGGERS_RAW[INS_TODAY_IDX]||[];
+    if(!todayTrigs.length){el.innerHTML='<p style="font-size:12px;color:#999;">No triggers logged today.</p>';return;}
+    el.innerHTML='<p style="font-size:10px;color:#999;margin-bottom:8px;">Today\'s triggers · historical avg impact:</p>'
+      +todayTrigs.map(function(t){
+        var maxD=0,maxDom='dryness';
+        D_KEYS.forEach(function(d){var delta=insTriggerDelta(t,d);if(delta>maxD){maxD=delta;maxDom=d;}});
+        return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #F5F0E8;"><span style="font-size:12px;color:#1B4332;font-weight:500;">'+t+'</span><span style="font-size:11px;color:#DC2626;font-weight:600;">'+(maxD>0?'+'+maxD.toFixed(1)+' '+D_NAMES[maxDom]:'(tracking)')+'</span></div>';
+      }).join('');
+  } else if(insTab==='weekly'){
+    var wkN=Math.min(7,n);
+    var weekIdx=Array.from({length:wkN},function(_,i){return n-wkN+i;});
+    var allWeekTrigs=[];
+    weekIdx.forEach(function(i){(INS_TRIGGERS_RAW[i]||[]).forEach(function(t){if(allWeekTrigs.indexOf(t)===-1)allWeekTrigs.push(t);});});
+    if(!allWeekTrigs.length){el.innerHTML='<p style="font-size:12px;color:#999;">No triggers logged this week.</p>';return;}
+    var items=allWeekTrigs.map(function(t){
+      var maxD=0;
+      D_KEYS.forEach(function(d){var delta=insTriggerDelta(t,d);if(delta>maxD)maxD=delta;});
+      return {t:t,d:maxD};
+    }).sort(function(a,b){return b.d-a.d;});
+    el.innerHTML=items.map(function(obj){
+      var barW=Math.round(Math.min(100,obj.d/3*100));
+      var clr=obj.d>1?'#EF4444':'#F59E0B';
+      return '<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;"><span style="font-size:11px;font-weight:600;color:#1B4332;">'+obj.t+'</span><span style="font-size:10px;color:'+clr+';font-weight:700;">+'+obj.d.toFixed(1)+'</span></div><div style="height:5px;background:#E8DFD0;border-radius:3px;"><div style="height:100%;width:'+barW+'%;background:'+clr+';border-radius:3px;"></div></div></div>';
+    }).join('');
+  } else {
+    var domains=['suffocation','burning','dryness'];
+    var html='<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:10px;"><tr><th style="padding:4px;text-align:left;color:#999;font-weight:500;"></th>'
+      +domains.map(function(d){return '<th style="padding:5px;text-align:center;color:'+D_COLORS[d]+';font-weight:700;">'+D_NAMES[d].slice(0,4)+'</th>';}).join('')+'</tr>';
+    trigList.forEach(function(t){
+      html+='<tr><td style="padding:5px 4px;color:#1B4332;font-weight:500;white-space:nowrap;">'+t+'</td>';
+      domains.forEach(function(d){
+        var delta=insTriggerDelta(t,d);
+        var clr=delta>1?'#DC2626':delta>0.5?'#D97706':'#9CA3AF';
+        var bg=delta>1?'#FEE2E2':delta>0.5?'#FEF3C7':'transparent';
+        html+='<td style="padding:5px;text-align:center;background:'+bg+';border-radius:4px;color:'+clr+';font-weight:'+(delta>0.5?700:400)+';">'+(delta>0?'+':'')+delta.toFixed(1)+'</td>';
+      });
+      html+='</tr>';
+    });
+    html+='</table></div><p style="font-size:9px;color:#999;margin-top:8px;">🔴 &gt;1.0 strong &nbsp; 🟡 &gt;0.5 moderate</p>';
+    el.innerHTML=html;
+  }
+}
+
+// ── Goal Momentum ─────────────────────────────────────────────────
+function renderInsMomentum(){
+  var el=document.getElementById('ins-momentum');
+  if(insTab==='daily'){el.style.display='none';return;}
+  el.style.display='block';
+  var content=document.getElementById('ins-momentum-content');
+  var n=INS_COUNT;
+  var html='';
+  var last3N=Math.min(3,n);
+  var lastThree=Array.from({length:last3N},function(_,i){return n-last3N+i;});
+  var prev3N=Math.min(3,Math.max(0,n-3));
+  var prevThree=Array.from({length:prev3N},function(_,i){return Math.max(0,n-6)+i;});
+  var allIdx=Array.from({length:n},function(_,i){return i;});
+  var goalEmojis={goalA:'😴',goalB:'💼',goalC:'🌿',goalD:'💨',goalE:'🔍'};
+  INS_GOALS_DEF.forEach(function(g){
+    var emoji=goalEmojis[g.key]||'🎯';
+    if(g.domains==='all'||g.key==='goalE'){
+      var pairs=0;
+      var trigList=['A/C','Dry Air','Stress','Poor Sleep','Weather Change'];
+      trigList.forEach(function(t){D_KEYS.forEach(function(d){if(insTriggerDelta(t,d)>0.5)pairs++;});});
+      html+='<div style="background:#fff;border-radius:14px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.04);"><p style="font-size:12px;font-weight:600;color:#2D6A4F;margin-bottom:6px;">'+emoji+' '+g.name+'</p><p style="font-size:11px;color:#555;line-height:1.65;">'+(pairs?pairs+' trigger-pattern pair'+(pairs!==1?'s':'')+' identified. A/C, Dry Air, and Stress are common factors. Keep logging for stronger correlations.':'Not enough data for trigger correlations yet — keep logging daily!')+'</p></div>';
+      return;
+    }
+    var domains=Array.isArray(g.domains)?g.domains:[];
+    if(!domains.length)return;
+    var baseline=domains.reduce(function(s,d){return s+INS_BASELINE[d];},0)/domains.length;
+    var current=insDomainGroupAvg(allIdx,domains);
+    var target=g.target||1.0;
+    var denom=baseline-target;
+    var pct=denom===0?100:Math.round((baseline-current)/denom*100);
+    var cur3=lastThree.length?insDomainGroupAvg(lastThree,domains):current;
+    var prv3=prevThree.length?insDomainGroupAvg(prevThree,domains):baseline;
+    var diff=cur3-prv3;
+    var trend=diff<-0.3?'improving':diff>0.3?'worsening':'stable';
+    var trendTxt=trend==='improving'?'↑ Improving this period':trend==='worsening'?'↓ Worsening this period':'→ Stable this period';
+    var trendClr=trend==='improving'?'#16A34A':trend==='worsening'?'#DC2626':'#6B7280';
+    html+='<div style="background:#fff;border-radius:14px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.04);"><p style="font-size:12px;font-weight:600;color:#2D6A4F;margin-bottom:6px;">'+emoji+' '+g.name+' — '+Math.min(pct,100)+'% progress</p><p style="font-size:11px;color:'+trendClr+';font-weight:600;margin-bottom:4px;">'+trendTxt+'</p><p style="font-size:11px;color:#555;line-height:1.65;">'+(n>=7?'Current avg: '+current.toFixed(1)+'/5 vs baseline '+baseline.toFixed(1)+'/5. '+(pct>=100?'Target exceeded!':'Target: '+target.toFixed(1)+'/5 — '+(Math.max(0,100-pct))+'% remaining.'):'Keep logging daily to build your momentum picture.')+'</p></div>';
+  });
+  content.innerHTML=html||'<p style="font-size:11px;color:#999;">Log more days to see momentum insights.</p>';
+}
 </script>
 </body>
 </html>
