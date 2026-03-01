@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>PRANA</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:linear-gradient(135deg,#e8e0d4,#d5d0c8);display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:'SF Pro Display',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;}
+
+@keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes floatUp{0%,100%{transform:translateY(0) scale(1);opacity:0}20%{opacity:var(--p-op)}80%{opacity:var(--p-op)}50%{transform:translateY(-60px) scale(1.3)}}
+@keyframes popIn{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(82,183,136,.4)}70%{box-shadow:0 0 0 10px rgba(82,183,136,0)}}
+@keyframes confettiFall{0%{opacity:1;transform:translateY(0) rotate(0deg)}100%{opacity:0;transform:translateY(600px) rotate(720deg)}}
+@keyframes gentlePulse{0%,100%{opacity:.7}50%{opacity:1}}
+
+/* ── iPhone Frame with bezels ── */
+.phone-outer{width:415px;max-width:100vw;height:890px;max-height:100vh;border-radius:56px;background:linear-gradient(145deg,#1a1a1a,#2a2a2a);padding:8px;box-shadow:0 30px 90px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.1);position:relative;}
+.phone-outer::before{content:'';position:absolute;top:8px;bottom:8px;left:8px;right:8px;border-radius:50px;border:1px solid rgba(255,255,255,.05);pointer-events:none;z-index:300;}
+/* Side button accents */
+.phone-outer::after{content:'';position:absolute;right:-3px;top:180px;width:3px;height:40px;background:#333;border-radius:0 2px 2px 0;}
+.phone{width:100%;height:100%;border-radius:50px;overflow:hidden;position:relative;background:#FAF6F0;box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);}
+
+/* Dynamic Island */
+.dynamic-island{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:126px;height:36px;background:#000;border-radius:20px;z-index:200;pointer-events:none;}
+
+/* ── Screens ── */
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;transition:opacity .4s ease,transform .4s ease;overflow-x:hidden;}
+.screen.hidden{opacity:0;transform:translateY(14px);pointer-events:none;z-index:0;}
+.screen:not(.hidden){z-index:1;}
+.screen::-webkit-scrollbar{width:0;}
+.screen.scrollable{overflow-y:auto;}
+.screen.no-scroll{overflow-y:hidden;}
+
+/* ── Particles ── */
+.particles{position:absolute;inset:0;overflow:hidden;pointer-events:none;}
+.particle{position:absolute;border-radius:50%;background:#74C69D;animation:floatUp var(--dur) var(--delay) ease-in-out infinite;}
+
+/* ── Buttons ── */
+.btn-primary{width:100%;padding:15px 0;border:none;border-radius:16px;background:linear-gradient(135deg,#2D6A4F,#40916C);color:#fff;font-size:16px;font-weight:600;cursor:pointer;letter-spacing:.5px;box-shadow:0 8px 24px rgba(45,106,79,.27);transition:transform .2s;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn-primary:active{transform:scale(.97);}
+.btn-secondary{width:100%;padding:15px 0;border:2px solid #2D6A4F;border-radius:16px;background:transparent;color:#2D6A4F;font-size:16px;font-weight:600;cursor:pointer;letter-spacing:.5px;transition:all .2s;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn-secondary:hover{background:rgba(45,106,79,.05);}
+.btn-secondary:active{transform:scale(.97);}
+.btn-next{margin:0 auto;padding:14px 48px;border:none;border-radius:14px;background:linear-gradient(135deg,#2D6A4F,#40916C);color:#fff;font-size:15px;font-weight:600;cursor:pointer;box-shadow:0 6px 20px rgba(45,106,79,.25);transition:transform .2s;font-family:inherit;}
+.btn-next:active{transform:scale(.96);}
+
+/* Circle arrow button */
+.circle-arrow{width:48px;height:48px;border-radius:50%;border:none;background:linear-gradient(135deg,#2D6A4F,#40916C);color:#fff;font-size:20px;cursor:pointer;box-shadow:0 4px 16px rgba(45,106,79,.3);transition:transform .2s;display:flex;align-items:center;justify-content:center;position:absolute;bottom:20px;right:20px;z-index:10;}
+.circle-arrow:active{transform:scale(.92);}
+
+.btn-done{margin:0 auto;padding:14px 48px;border:none;border-radius:14px;background:linear-gradient(135deg,#2D6A4F,#52B788);color:#fff;font-size:15px;font-weight:600;cursor:pointer;box-shadow:0 6px 20px rgba(45,106,79,.3);transition:transform .2s;font-family:inherit;animation:pulse 2s infinite;}
+.btn-done:active{transform:scale(.96);}
+
+/* ── Back button ── */
+.back-btn{position:absolute;top:58px;left:24px;background:rgba(183,228,199,.4);border:none;width:36px;height:36px;border-radius:11px;cursor:pointer;font-size:17px;color:#2D6A4F;display:flex;align-items:center;justify-content:center;z-index:10;transition:background .2s;}
+.back-btn:hover{background:rgba(183,228,199,.65);}
+
+/* ── Form inputs (underline) ── */
+.form-field{margin-bottom:18px;width:100%;}
+.form-field label{font-size:11px;font-weight:600;color:#6B7C6E;letter-spacing:.8px;text-transform:uppercase;display:block;margin-bottom:3px;}
+.form-field input,.form-field select{width:100%;padding:9px 0;border:none;border-bottom:1.5px solid #d4cfc7;background:transparent;font-size:15px;color:#1B4332;outline:none;font-family:inherit;transition:border-color .2s;}
+.form-field input:focus,.form-field select:focus{border-bottom-color:#52B788;}
+.form-field input::placeholder{color:#bbb;}
+.form-field select{cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%236B7C6E' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 4px center;}
+
+/* ── Option cards ── */
+.option-card{width:100%;padding:14px 18px;border:2px solid #E8DFD0;border-radius:16px;background:#fff;cursor:pointer;transition:all .25s;margin-bottom:10px;display:flex;align-items:center;gap:12px;}
+.option-card:hover{border-color:#74C69D;background:#f5faf7;}
+.option-card.selected{border-color:#2D6A4F;background:linear-gradient(135deg,rgba(45,106,79,.06),rgba(82,183,136,.08));box-shadow:0 4px 16px rgba(45,106,79,.1);}
+.option-card .radio{width:20px;height:20px;border-radius:50%;border:2px solid #ccc;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;}
+.option-card.selected .radio{border-color:#2D6A4F;background:#2D6A4F;}
+.option-card.selected .radio::after{content:'';width:7px;height:7px;border-radius:50%;background:#fff;}
+.option-card h4{font-size:14px;color:#1B4332;font-weight:600;margin-bottom:1px;}
+.option-card p{font-size:11px;color:#6B7C6E;line-height:1.3;}
+
+/* ── Slider rows ── */
+.slider-row{margin-bottom:5px;width:100%;padding:16px 14px;border-radius:16px;border-left:4px solid #2D6A4F;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.04);}
+.slider-row .slider-label{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
+.slider-row .slider-label h4{font-size:13px;color:#1B4332;font-weight:600;}
+.slider-row .slider-label .val{font-size:16px;font-weight:700;color:#2D6A4F;min-width:20px;text-align:right;}
+.slider-row input[type=range]{width:100%;-webkit-appearance:none;appearance:none;height:5px;border-radius:3px;background:linear-gradient(90deg,#B7E4C7 0%,#E8DFD0 0%);outline:none;cursor:pointer;}
+.slider-row input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#2D6A4F,#40916C);box-shadow:0 3px 10px rgba(45,106,79,.3);cursor:pointer;transition:transform .15s;}
+.slider-row input[type=range]::-webkit-slider-thumb:active{transform:scale(1.15);}
+
+/* ── Goal cards (special) ── */
+.goal-card{margin-bottom:6px;width:100%;padding:14px 16px;border-radius:16px;border-left:4px solid #2D6A4F;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.04);}
+.goal-card .goal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;}
+.goal-card .goal-header h4{font-size:13px;color:#1B4332;font-weight:600;}
+.goal-card .goal-header .val{font-size:16px;font-weight:700;color:#2D6A4F;}
+.goal-card .goal-desc{font-size:11px;color:#999;margin-bottom:6px;}
+.goal-card input[type=range]{width:100%;-webkit-appearance:none;appearance:none;height:5px;border-radius:3px;background:linear-gradient(90deg,#B7E4C7 0%,#E8DFD0 0%);outline:none;cursor:pointer;}
+.goal-card input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#2D6A4F,#40916C);box-shadow:0 3px 10px rgba(45,106,79,.3);cursor:pointer;}
+
+/* ── Home cards ── */
+.home-card{width:100%;padding:28px 22px;border-radius:22px;cursor:pointer;transition:transform .2s,box-shadow .2s;margin-bottom:14px;display:flex;align-items:center;gap:16px;position:relative;overflow:hidden;}
+.home-card:active{transform:scale(.98);}
+.home-card .card-icon{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.home-card h4{font-size:14px;font-weight:600;margin-bottom:3px;}
+.home-card p{font-size:12px;opacity:.6;line-height:1.3;}
+.home-card .arrow{position:absolute;right:18px;top:50%;transform:translateY(-50%);opacity:.4;}
+
+/* ── Tooltip ── */
+.tooltip-trigger{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:rgba(45,106,79,.1);color:#2D6A4F;font-size:11px;font-weight:700;cursor:pointer;position:relative;margin-left:6px;}
+.tooltip-trigger .tooltip-box{display:none;position:absolute;top:calc(100% + 8px);left:0;background:#1B4332;color:#fff;padding:10px 12px;border-radius:10px;font-size:10px;line-height:1.5;font-weight:400;width:200px;z-index:100;box-shadow:0 8px 24px rgba(0,0,0,.25);}
+.tooltip-trigger:hover .tooltip-box,.tooltip-trigger:active .tooltip-box{display:block;}
+
+/* ── Trigger chips ── */
+.chip{display:inline-block;padding:9px 14px;border-radius:12px;border:1.5px solid #E8DFD0;background:#fff;font-size:12px;color:#1B4332;cursor:pointer;transition:all .2s;margin:0 5px 7px 0;font-family:inherit;}
+.chip.active{border-color:#2D6A4F;background:linear-gradient(135deg,rgba(45,106,79,.08),rgba(82,183,136,.12));color:#2D6A4F;font-weight:600;}
+
+/* ── Time rollers ── */
+.roller-wrap{display:flex;align-items:center;gap:10px;justify-content:center;margin:10px 0 16px;}
+.roller{width:65px;text-align:center;}
+.roller label{font-size:9px;color:#6B7C6E;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:3px;}
+.roller select{width:100%;padding:8px 4px;border:1.5px solid #E8DFD0;border-radius:10px;font-size:16px;font-weight:600;color:#1B4332;text-align:center;background:#fff;cursor:pointer;font-family:inherit;-webkit-appearance:none;appearance:none;outline:none;}
+.roller select:focus{border-color:#52B788;}
+
+/* ── Settings dropdown ── */
+.settings-menu{position:absolute;top:56px;right:20px;background:#fff;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.15);padding:6px;z-index:50;min-width:170px;display:none;}
+.settings-menu.show{display:block;animation:slideUp .25s ease;}
+.settings-menu button{width:100%;padding:11px 14px;border:none;background:transparent;font-size:13px;color:#1B4332;text-align:left;cursor:pointer;border-radius:10px;font-family:inherit;display:flex;align-items:center;gap:10px;transition:background .15s;}
+.settings-menu button:hover{background:#f5f5f0;}
+.settings-menu button.danger{color:#c0392b;}
+
+/* ── Health card ── */
+.health-row{display:flex;align-items:center;gap:14px;padding:13px 0;border-bottom:1px solid #f0ebe4;}
+.health-row:last-child{border-bottom:none;}
+.health-row .h-icon{width:34px;height:34px;border-radius:10px;background:rgba(45,106,79,.06);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.health-row .h-icon svg{width:16px;height:16px;}
+.health-row .h-label{font-size:10px;color:#6B7C6E;text-transform:uppercase;letter-spacing:.5px;}
+.health-row .h-value{font-size:14px;color:#1B4332;font-weight:600;}
+
+.confetti{position:absolute;font-size:20px;animation:confettiFall 3s ease-in forwards;pointer-events:none;}
+
+/* ── Textarea with mic ── */
+.textarea-wrap{position:relative;width:100%;}
+.textarea-wrap textarea{width:100%;height:60px;padding:12px 40px 12px 14px;border:1.5px solid #E8DFD0;border-radius:12px;background:#fff;font-size:13px;color:#1B4332;font-family:inherit;outline:none;resize:none;}
+.textarea-wrap textarea:focus{border-color:#52B788;}
+.textarea-wrap .mic-btn{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;opacity:.4;}
+.textarea-wrap .mic-btn:hover{opacity:.7;}
+
+/* goal prox section */
+.prox-section{padding:14px 16px;border-radius:16px;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.05);margin-top:8px;}
+</style>
+</head>
+<body>
+<div class="phone-outer">
+<div class="phone" id="phone">
+<!-- Dynamic Island -->
+<div class="dynamic-island"></div>
+
+<!-- ════════ SPLASH ════════ -->
+<div class="screen no-scroll" id="splash" style="align-items:center;justify-content:center;padding:40px 32px;background:linear-gradient(170deg,#2D6A4F 0%,#40916C 50%,#52B788 100%);">
+  <div class="particles" id="p-splash"></div>
+  <div style="animation:breathe 3s ease-in-out infinite;margin-bottom:24px;">
+    <svg width="100" height="100" viewBox="0 0 120 120" fill="none"><ellipse cx="60" cy="52" rx="14" ry="36" fill="#52B788" opacity=".9"/><ellipse cx="60" cy="52" rx="14" ry="36" fill="#40916C" opacity=".7" transform="rotate(-25 60 52)"/><ellipse cx="60" cy="52" rx="14" ry="36" fill="#2D6A4F" opacity=".5" transform="rotate(-50 60 52)"/><ellipse cx="60" cy="52" rx="14" ry="36" fill="#40916C" opacity=".7" transform="rotate(25 60 52)"/><ellipse cx="60" cy="52" rx="14" ry="36" fill="#2D6A4F" opacity=".5" transform="rotate(50 60 52)"/><path d="M30 82Q60 98 90 82" stroke="#74C69D" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M36 88Q60 102 84 88" stroke="#B7E4C7" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="60" cy="42" r="4" fill="#F5F0E8" opacity=".8"/></svg>
+  </div>
+  <h1 style="font-size:42px;font-weight:300;color:#fff;letter-spacing:14px;animation:fadeUp 1.2s .4s ease both;">PRANA</h1>
+  <p style="font-size:13px;color:#B7E4C7;letter-spacing:3px;margin-top:10px;animation:fadeUp 1.2s .8s ease both;">BREATHE · TRACK · HEAL</p>
+</div>
+
+<!-- ════════ LANDING ════════ -->
+<div class="screen hidden no-scroll" id="landing" style="align-items:center;justify-content:center;padding:40px 32px;">
+  <div class="particles" id="p-landing"></div>
+  <div style="position:absolute;top:-120px;left:-60px;width:500px;height:300px;border-radius:0 0 50% 50%;background:linear-gradient(180deg,rgba(45,106,79,.09),transparent);"></div>
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;z-index:1;">
+    <svg width="70" height="70" viewBox="0 0 120 120" fill="none"><ellipse cx="60" cy="52" rx="14" ry="36" fill="#52B788" opacity=".9"/><ellipse cx="60" cy="52" rx="14" ry="36" fill="#40916C" opacity=".7" transform="rotate(-25 60 52)"/><ellipse cx="60" cy="52" rx="14" ry="36" fill="#2D6A4F" opacity=".5" transform="rotate(-50 60 52)"/><ellipse cx="60" cy="52" rx="14" ry="36" fill="#40916C" opacity=".7" transform="rotate(25 60 52)"/><ellipse cx="60" cy="52" rx="14" ry="36" fill="#2D6A4F" opacity=".5" transform="rotate(50 60 52)"/><path d="M30 82Q60 98 90 82" stroke="#74C69D" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="60" cy="42" r="4" fill="#F5F0E8" opacity=".8"/></svg>
+    <h1 style="font-size:34px;font-weight:300;color:#2D6A4F;letter-spacing:10px;margin:8px 0;">PRANA</h1>
+    <p style="font-size:14px;color:#6B7C6E;text-align:center;line-height:1.6;margin-bottom:36px;max-width:260px;">Your personal companion for symptom tracking & mindful healing</p>
+    <div style="width:100%;padding:24px 20px;border-radius:20px;background:linear-gradient(135deg,#2D6A4F,#40916C);margin-bottom:40px;text-align:center;box-shadow:0 14px 36px rgba(45,106,79,.25);">
+      <div style="font-size:36px;margin-bottom:8px;">🌿</div>
+      <p style="color:#B7E4C7;font-size:13px;line-height:1.7;">Translate your lived experience into <span style="color:#fff;font-weight:600;">meaningful insights</span> for better care</p>
+    </div>
+    <button class="btn-primary" onclick="go('login')">Log In</button>
+    <div style="height:12px;"></div>
+    <button class="btn-secondary" onclick="go('signup')">Sign Up</button>
+  </div>
+</div>
+
+<!-- ════════ LOGIN ════════ -->
+<div class="screen hidden no-scroll" id="login" style="align-items:center;justify-content:center;padding:60px 32px 32px;">
+  <button class="back-btn" onclick="go('landing')">←</button>
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;">
+    <svg width="50" height="50" viewBox="0 0 120 120" fill="none"><ellipse cx="60" cy="52" rx="14" ry="36" fill="#52B788" opacity=".9"/><ellipse cx="60" cy="52" rx="14" ry="36" fill="#40916C" opacity=".7" transform="rotate(-25 60 52)"/><ellipse cx="60" cy="52" rx="14" ry="36" fill="#2D6A4F" opacity=".5" transform="rotate(-50 60 52)"/><ellipse cx="60" cy="52" rx="14" ry="36" fill="#40916C" opacity=".7" transform="rotate(25 60 52)"/><ellipse cx="60" cy="52" rx="14" ry="36" fill="#2D6A4F" opacity=".5" transform="rotate(50 60 52)"/><path d="M30 82Q60 98 90 82" stroke="#74C69D" stroke-width="3" fill="none" stroke-linecap="round"/></svg>
+    <h2 style="font-size:26px;font-weight:600;color:#1B4332;margin:14px 0 4px;">Welcome back</h2>
+    <p style="font-size:13px;color:#6B7C6E;margin:0 0 32px;">Sign in to continue your journey</p>
+    <div class="form-field"><label>Email</label><input type="email" placeholder="you@example.com"/></div>
+    <div class="form-field"><label>Password</label><input type="password" placeholder="••••••••"/></div>
+    <p style="font-size:12px;color:#40916C;font-weight:600;align-self:flex-end;cursor:pointer;margin:0 0 28px;">Forgot password?</p>
+    <button class="btn-primary" onclick="go('home')">Log In</button>
+    <p style="font-size:13px;color:#6B7C6E;margin-top:20px;">No account? <span style="color:#2D6A4F;font-weight:600;cursor:pointer;" onclick="go('signup')">Sign Up</span></p>
+  </div>
+</div>
+
+<!-- ════════ SIGNUP (email+password → profile creation) ════════ -->
+<div class="screen hidden no-scroll" id="signup" style="align-items:center;justify-content:center;padding:60px 32px 32px;">
+  <button class="back-btn" onclick="go('landing')">←</button>
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;">
+    <svg width="50" height="50" viewBox="0 0 120 120" fill="none"><ellipse cx="60" cy="52" rx="14" ry="36" fill="#52B788" opacity=".9"/><ellipse cx="60" cy="52" rx="14" ry="36" fill="#40916C" opacity=".7" transform="rotate(-25 60 52)"/><ellipse cx="60" cy="52" rx="14" ry="36" fill="#2D6A4F" opacity=".5" transform="rotate(-50 60 52)"/><ellipse cx="60" cy="52" rx="14" ry="36" fill="#40916C" opacity=".7" transform="rotate(25 60 52)"/><ellipse cx="60" cy="52" rx="14" ry="36" fill="#2D6A4F" opacity=".5" transform="rotate(50 60 52)"/><path d="M30 82Q60 98 90 82" stroke="#74C69D" stroke-width="3" fill="none" stroke-linecap="round"/></svg>
+    <h2 style="font-size:26px;font-weight:600;color:#1B4332;margin:14px 0 4px;">Join Prana</h2>
+    <p style="font-size:13px;color:#6B7C6E;margin:0 0 32px;text-align:center;">Begin your path to mindful healing</p>
+    <div class="form-field"><label>Email</label><input type="email" placeholder="you@example.com"/></div>
+    <div class="form-field"><label>Password</label><input type="password" placeholder="Min. 8 characters"/></div>
+    <button class="btn-primary" onclick="go('screen2')" style="margin-bottom:16px;">Sign Up</button>
+    <div style="display:flex;align-items:center;gap:12px;width:100%;margin:8px 0 16px;"><div style="flex:1;height:1px;background:#E8DFD0;"></div><span style="font-size:12px;color:#6B7C6E;">or</span><div style="flex:1;height:1px;background:#E8DFD0;"></div></div>
+    <button class="btn-secondary"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg> Continue with Google</button>
+    <p style="font-size:13px;color:#6B7C6E;margin-top:20px;">Already have an account? <span style="color:#2D6A4F;font-weight:600;cursor:pointer;" onclick="go('login')">Log In</span></p>
+  </div>
+</div>
+
+<!-- ════════ SCREEN 2: PROFILE CREATION ════════ -->
+<div class="screen hidden scrollable" id="screen2" style="padding:0;">
+  <div style="background:linear-gradient(135deg,#2D6A4F,#40916C);padding:72px 28px 28px;border-radius:0 0 30px 30px;">
+    <p style="font-size:12px;color:#B7E4C7;margin-bottom:4px;">Step 1 of 4</p>
+    <h2 style="font-size:22px;font-weight:700;color:#fff;line-height:1.3;">Let's Create<br/>an Account!</h2>
+    <p style="font-size:12px;color:#B7E4C7;margin-top:6px;">Tell us a little about yourself</p>
+  </div>
+  <div style="padding:24px 28px 100px;flex:1;">
+    <div class="form-field"><label>Name</label><input type="text" id="f-name" placeholder="Your full name"/></div>
+    <div class="form-field"><label>Age</label><input type="number" id="f-age" placeholder="e.g. 28"/></div>
+    <div class="form-field"><label>Gender</label><select id="f-gender"><option value="" disabled selected>Select gender</option><option>Male</option><option>Female</option><option>Non-binary</option><option>Prefer not to say</option></select></div>
+    <div class="form-field"><label>Phone</label><input type="tel" id="f-phone" placeholder="+1 (555) 000-0000"/></div>
+    <div class="form-field"><label>Medications</label><input type="text" id="f-meds" placeholder="e.g. Saline spray, Humidifier"/></div>
+    <div class="form-field"><label>Blood Group</label><select id="f-blood"><option value="" disabled selected>Select blood group</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select></div>
+    <div class="form-field"><label>Allergies</label><input type="text" id="f-allergies" placeholder="e.g. Dust, Pollen"/></div>
+    <div class="form-field"><label>Caretaker Email</label><input type="email" id="f-caretaker" placeholder="caretaker@email.com"/></div>
+  </div>
+  <div style="position:sticky;bottom:0;padding:14px 28px 30px;background:linear-gradient(transparent,#FAF6F0 20%);text-align:center;">
+    <button class="btn-next" onclick="go('screen3')">Next →</button>
+  </div>
+</div>
+
+<!-- ════════ SCREEN 3: SUBTYPE + SURGERY ════════ -->
+<div class="screen hidden no-scroll" id="screen3" style="padding:0;">
+  <div style="background:linear-gradient(135deg,#2D6A4F,#40916C);padding:72px 28px 24px;border-radius:0 0 30px 30px;">
+    <button class="back-btn" style="top:18px;left:16px;background:rgba(255,255,255,.15);color:#fff;" onclick="go('screen2')">←</button>
+    <p style="font-size:12px;color:#B7E4C7;margin-bottom:4px;">Step 2 of 4</p>
+    <h2 style="font-size:20px;font-weight:700;color:#fff;line-height:1.3;">Help us understand<br/>your condition</h2>
+    <p style="font-size:12px;color:#B7E4C7;margin-top:6px;">Which subtype applies to you?</p>
+  </div>
+  <div style="padding:20px 28px;flex:1;display:flex;flex-direction:column;">
+    <div class="option-card" onclick="selectSubtype(this,'ENS-IT')"><div class="radio"></div><div><h4>ENS-IT</h4><p>Inferior Turbinate — most common subtype</p></div></div>
+    <div class="option-card" onclick="selectSubtype(this,'ENS-MT')"><div class="radio"></div><div><h4>ENS-MT</h4><p>Middle Turbinate — less common variant</p></div></div>
+    <div class="option-card" onclick="selectSubtype(this,'ENS-Both')"><div class="radio"></div><div><h4>ENS-Both</h4><p>Inferior + Middle — most severe presentation</p></div></div>
+    <div style="margin-top:16px;">
+      <label style="font-size:11px;font-weight:600;color:#6B7C6E;letter-spacing:.8px;text-transform:uppercase;display:block;margin-bottom:8px;">Recent Surgery Date</label>
+      <input type="date" id="f-surgery" style="width:100%;padding:12px 14px;border:1.5px solid #E8DFD0;border-radius:12px;background:#fff;font-size:14px;color:#1B4332;font-family:inherit;outline:none;cursor:pointer;"/>
+    </div>
+    <div style="flex:1;"></div>
+    <div style="text-align:center;padding-bottom:28px;">
+      <button class="btn-next" onclick="go('screen4')">Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ SCREEN 4: BASELINE ENS6Q ════════ -->
+<div class="screen hidden scrollable" id="screen4" style="padding:0;">
+  <div style="background:linear-gradient(135deg,#2D6A4F,#40916C);padding:72px 28px 20px;border-radius:0 0 30px 30px;">
+    <button class="back-btn" style="top:18px;left:16px;background:rgba(255,255,255,.15);color:#fff;" onclick="go('screen3')">←</button>
+    <p style="font-size:12px;color:#B7E4C7;margin-bottom:4px;">Step 3 of 4</p>
+    <div style="display:flex;align-items:center;gap:6px;">
+      <h2 style="font-size:19px;font-weight:700;color:#fff;line-height:1.3;">How have you been feeling<br/>this past week?</h2>
+      <span class="tooltip-trigger" style="background:rgba(255,255,255,.2);color:#fff;">?
+        <span class="tooltip-box" style="top:calc(100% + 8px);left:auto;right:0;">0 — No problem at all<br/>1 — Occasional, barely noticeable<br/>2 — Noticeable, manageable<br/>3 — Frequent, needs relief<br/>4 — Constant, interferes with life<br/>5 — Severe, unbearable</span>
+      </span>
+    </div>
+  </div>
+  <div style="padding:16px 24px 90px;flex:1;display:flex;flex-direction:column;gap:6px;" id="baseline-sliders"></div>
+  <div style="position:sticky;bottom:0;padding:12px 28px 28px;background:linear-gradient(transparent,#FAF6F0 20%);text-align:center;">
+    <button class="btn-next" onclick="go('screen5')">Next →</button>
+  </div>
+</div>
+
+<!-- ════════ SCREEN 5: GOALS ════════ -->
+<div class="screen hidden scrollable" id="screen5" style="padding:0;">
+  <div style="background:linear-gradient(135deg,#2D6A4F,#40916C);padding:72px 28px 20px;border-radius:0 0 30px 30px;">
+    <button class="back-btn" style="top:18px;left:16px;background:rgba(255,255,255,.15);color:#fff;" onclick="go('screen4')">←</button>
+    <p style="font-size:12px;color:#B7E4C7;margin-bottom:4px;">Step 4 of 4</p>
+    <h2 style="font-size:19px;font-weight:700;color:#fff;line-height:1.3;">Set your goals</h2>
+    <p style="font-size:12px;color:#B7E4C7;margin-top:4px;">We're here to help you reach every single one</p>
+  </div>
+  <div style="padding:16px 24px 90px;flex:1;display:flex;flex-direction:column;gap:6px;" id="goal-sliders"></div>
+  <div style="position:sticky;bottom:0;padding:12px 28px 28px;background:linear-gradient(transparent,#FAF6F0 20%);text-align:center;">
+    <button class="btn-next" onclick="go('allset')">Next →</button>
+  </div>
+</div>
+
+<!-- ════════ ALL SET ════════ -->
+<div class="screen hidden no-scroll" id="allset" style="align-items:center;justify-content:center;padding:40px 32px;background:linear-gradient(170deg,#2D6A4F 0%,#40916C 100%);">
+  <div class="particles" id="p-allset"></div>
+  <div id="confetti-container" style="position:absolute;inset:0;pointer-events:none;overflow:hidden;"></div>
+  <div style="text-align:center;z-index:1;animation:popIn .6s ease;">
+    <!-- Mindful lotus icon instead of emoji -->
+    <svg width="80" height="80" viewBox="0 0 120 120" fill="none" style="margin-bottom:20px;animation:gentlePulse 3s ease-in-out infinite;">
+      <ellipse cx="60" cy="50" rx="12" ry="30" fill="#B7E4C7" opacity=".9"/>
+      <ellipse cx="60" cy="50" rx="12" ry="30" fill="#74C69D" opacity=".7" transform="rotate(-25 60 50)"/>
+      <ellipse cx="60" cy="50" rx="12" ry="30" fill="#52B788" opacity=".5" transform="rotate(-50 60 50)"/>
+      <ellipse cx="60" cy="50" rx="12" ry="30" fill="#74C69D" opacity=".7" transform="rotate(25 60 50)"/>
+      <ellipse cx="60" cy="50" rx="12" ry="30" fill="#52B788" opacity=".5" transform="rotate(50 60 50)"/>
+      <circle cx="60" cy="42" r="5" fill="#fff" opacity=".6"/>
+      <path d="M30 80Q60 96 90 80" stroke="#B7E4C7" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <!-- Checkmark -->
+      <path d="M48 56L56 64L72 44" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <h2 style="font-size:26px;font-weight:700;color:#fff;margin-bottom:10px;">You're All Set!</h2>
+    <p style="font-size:14px;color:#B7E4C7;line-height:1.7;max-width:260px;margin:0 auto 40px;">Your profile is ready.<br/>Let's start this healing journey together.</p>
+    <button class="btn-next" style="background:rgba(255,255,255,.2);box-shadow:0 6px 20px rgba(0,0,0,.15);" onclick="go('home')">Let's Go →</button>
+  </div>
+</div>
+
+<!-- ════════ HOME SCREEN ════════ -->
+<div class="screen hidden no-scroll" id="home" style="padding:0;">
+  <div class="settings-menu" id="settingsMenu">
+    <button onclick="alert('Notifications coming soon!')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1B4332" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg> Notifications</button>
+    <button class="danger" onclick="go('landing');document.getElementById('settingsMenu').classList.remove('show');"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c0392b" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg> Sign Out</button>
+  </div>
+
+  <!-- Green greeting header -->
+  <div style="background:linear-gradient(135deg,#2D6A4F,#40916C);padding:72px 24px 44px;border-radius:0 0 30px 30px;position:relative;">
+    <div class="particles" id="p-home"></div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;position:relative;z-index:2;">
+      <div>
+        <p style="font-size:22px;font-weight:500;color:#B7E4C7;margin-bottom:4px;">Hi,</p>
+        <h2 id="home-name" style="font-size:36px;font-weight:700;color:#fff;margin-bottom:14px;line-height:1.1;"></h2>
+        <p id="home-greeting" style="font-size:18px;color:#B7E4C7;line-height:1.6;max-width:280px;font-style:italic;">"<span id="home-greeting-text"></span>"</p>
+      </div>
+      <button onclick="document.getElementById('settingsMenu').classList.toggle('show')" style="background:rgba(255,255,255,.15);border:none;width:38px;height:38px;border-radius:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Cards - scrollable area, BIG cards -->
+  <div style="flex:1;overflow-y:auto;padding:16px 24px 32px;" id="home-cards-area">
+    <!-- Card 1: Daily Log -->
+    <div class="home-card" id="card-log" style="background:linear-gradient(135deg,#c8e6d0,#a8d5b8);box-shadow:0 6px 24px rgba(45,106,79,.12);min-height:120px;" onclick="goLog()">
+      <div class="card-icon" style="background:rgba(45,106,79,.15);">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2D6A4F" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      </div>
+      <div>
+        <h4 style="color:#1B4332;" id="card-log-title">Ready to reflect on yesterday?</h4>
+        <p style="color:#2D6A4F;" id="card-log-desc">Log your symptoms & feelings</p>
+      </div>
+      <span class="arrow" style="color:#2D6A4F;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+    </div>
+
+    <!-- Card 2: Analytics -->
+    <div class="home-card" style="background:linear-gradient(135deg,#d6dcc8,#c4ccb6);box-shadow:0 6px 24px rgba(0,0,0,.06);min-height:120px;" onclick="alert('Insights & Patterns — coming next!')">
+      <div class="card-icon" style="background:rgba(45,106,79,.1);">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2D6A4F" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+      </div>
+      <div>
+        <h4 style="color:#1B4332;">Insights & Patterns</h4>
+        <p style="color:#3d5a3d;">See your journey in data</p>
+      </div>
+      <span class="arrow" style="color:#3d5a3d;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+    </div>
+
+    <!-- Card 3: Health Profile -->
+    <div class="home-card" style="background:linear-gradient(135deg,#d4cfc0,#c5bfae);box-shadow:0 6px 24px rgba(0,0,0,.06);min-height:120px;" onclick="go('healthcard')">
+      <div class="card-icon" style="background:rgba(45,106,79,.08);">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2D6A4F" stroke-width="2"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M12 11v6M9 14h6"/></svg>
+      </div>
+      <div>
+        <h4 style="color:#1B4332;">Medical Profile</h4>
+        <p style="color:#5a5244;">Your health at a glance</p>
+      </div>
+      <span class="arrow" style="color:#5a5244;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+    </div>
+
+    <!-- Card 4: SymptoReport -->
+    <div class="home-card" style="background:linear-gradient(135deg,#bdd4c2,#a5c0ac);box-shadow:0 6px 24px rgba(45,106,79,.1);min-height:120px;" onclick="alert('SymptoReport for clinicians — coming next!')">
+      <div class="card-icon" style="background:rgba(45,106,79,.12);">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2D6A4F" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 14l2 2 4-4"/></svg>
+      </div>
+      <div>
+        <h4 style="color:#1B4332;">SymptoReport</h4>
+        <p style="color:#2D6A4F;">Generate clinician report</p>
+      </div>
+      <span class="arrow" style="color:#2D6A4F;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ SCREEN 7: DAILY LOG ════════ -->
+<div class="screen hidden no-scroll" id="screen7" style="padding:0;position:relative;">
+  <div style="background:linear-gradient(135deg,#2D6A4F,#52B788);padding:76px 24px 16px;border-radius:0 0 28px 28px;">
+    <button class="back-btn" style="top:18px;left:16px;background:rgba(255,255,255,.15);color:#fff;" onclick="go('home')">←</button>
+    <div style="display:flex;align-items:center;gap:6px;">
+      <h2 style="font-size:18px;font-weight:700;color:#fff;">Let's log how yesterday felt</h2>
+      <span class="tooltip-trigger" style="background:rgba(255,255,255,.2);color:#fff;">?
+        <span class="tooltip-box" style="top:calc(100% + 8px);left:auto;right:0;">0 — No problem at all<br/>1 — Occasional, barely noticeable<br/>2 — Noticeable, manageable<br/>3 — Frequent, needs relief<br/>4 — Constant, interferes with life<br/>5 — Severe, unbearable</span>
+      </span>
+    </div>
+    <p style="font-size:11px;color:#B7E4C7;margin-top:4px;">Rate each symptom from your experience</p>
+  </div>
+  <div style="padding:10px 20px 0;flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:6px;" id="daily-sliders"></div>
+  <div style="padding:8px 20px 80px;">
+    <div style="position:relative;">
+      <textarea placeholder="Anything else you'd like to share..." style="width:100%;height:90px;padding:14px 44px 14px 14px;border:1.5px solid #E8DFD0;border-radius:16px;background:#fff;font-size:13px;color:#1B4332;font-family:inherit;outline:none;resize:none;box-sizing:border-box;"></textarea>
+      <button title="Voice input" style="position:absolute;right:12px;top:12px;background:none;border:none;cursor:pointer;opacity:.55;padding:0;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2D6A4F" stroke-width="2"><rect x="9" y="1" width="6" height="11" rx="3"/><path d="M19 10v1a7 7 0 01-14 0v-1M12 19v4M8 23h8"/></svg>
+      </button>
+    </div>
+  </div>
+  <button class="circle-arrow" onclick="go('screen8')">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+  </button>
+</div>
+
+<!-- ════════ SCREEN 8: EXPOSURE + SLEEP + GOAL PROXIMITY ════════ -->
+<div class="screen hidden no-scroll" id="screen8" style="padding:0;">
+  <div style="background:linear-gradient(135deg,#40916C,#52B788);padding:76px 24px 16px;border-radius:0 0 28px 28px;">
+    <button class="back-btn" style="top:18px;left:16px;background:rgba(255,255,255,.15);color:#fff;" onclick="go('screen7')">←</button>
+    <h2 style="font-size:18px;font-weight:700;color:#fff;">Almost done! 🌟</h2>
+    <p style="font-size:11px;color:#d4f5e4;margin-top:4px;">A few more quick details</p>
+  </div>
+  <div style="padding:16px 22px 28px;flex:1;display:flex;flex-direction:column;">
+    <!-- Triggers -->
+    <label style="font-size:10px;font-weight:600;color:#6B7C6E;letter-spacing:.8px;text-transform:uppercase;display:block;margin-bottom:6px;">Daily Exposure & Triggers</label>
+    <div style="padding:10px 12px;border:1.5px solid #E8DFD0;border-radius:12px;background:#fff;min-height:36px;margin-bottom:8px;display:flex;flex-wrap:wrap;gap:5px;font-size:13px;color:#1B4332;" id="trigger-display"><span style="color:#bbb;font-size:12px;" id="trigger-placeholder">Tap to select below...</span></div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:24px;" id="trigger-chips">
+      <span class="chip" onclick="toggleChip(this)" style="margin:0;text-align:center;">❄️ A/C</span>
+      <span class="chip" onclick="toggleChip(this)" style="margin:0;text-align:center;">💨 Dry Air</span>
+      <span class="chip" onclick="toggleChip(this)" style="margin:0;text-align:center;">😤 Stress</span>
+      <span class="chip" onclick="toggleChip(this)" style="margin:0;text-align:center;">😴 Poor Sleep</span>
+      <span class="chip" onclick="toggleChip(this)" style="margin:0;text-align:center;">🏃 Exercise</span>
+      <span class="chip" onclick="toggleChip(this)" style="margin:0;text-align:center;">🌦️ Weather</span>
+      <span class="chip" onclick="toggleChip(this)" style="margin:0;text-align:center;grid-column:1/-1;justify-self:center;min-width:140px;">💊 Skipped Meds</span>
+    </div>
+
+    <!-- Sleep -->
+    <label style="font-size:10px;font-weight:600;color:#6B7C6E;letter-spacing:.8px;text-transform:uppercase;display:block;margin-bottom:4px;">How long did you sleep last night?</label>
+    <div class="roller-wrap">
+      <div class="roller"><label>Hours</label><select id="sleep-hrs"></select></div>
+      <span style="font-size:20px;color:#ccc;margin-top:12px;">:</span>
+      <div class="roller"><label>Min</label><select id="sleep-min"></select></div>
+    </div>
+
+    <!-- Goal Proximity -->
+    <div class="prox-section" style="margin-top:20px;">
+      <label style="font-size:10px;font-weight:600;color:#6B7C6E;letter-spacing:.8px;text-transform:uppercase;display:block;margin-bottom:3px;">How close to your goals today?</label>
+      <p style="font-size:10px;color:#aaa;margin-bottom:8px;">1 = very far · 10 = almost there</p>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+        <span style="font-size:12px;font-weight:600;color:#1B4332;">Goal Proximity</span>
+        <span style="font-size:16px;font-weight:700;color:#2D6A4F;" id="goal-prox-val">1</span>
+      </div>
+      <input type="range" min="1" max="10" value="1" style="width:100%;-webkit-appearance:none;appearance:none;height:5px;border-radius:3px;background:linear-gradient(90deg,#52B788 0%,#E8DFD0 0%);outline:none;cursor:pointer;" oninput="document.getElementById('goal-prox-val').textContent=this.value;updateSliderBg(this,1,10)" id="prox-slider"/>
+    </div>
+
+    <div style="flex:1;"></div>
+    <div style="text-align:center;padding-top:12px;">
+      <button class="btn-done" onclick="markLogged();go('home')">Done ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ HEALTH CARD ════════ -->
+<div class="screen hidden no-scroll" id="healthcard" style="padding:0;">
+  <div style="background:linear-gradient(135deg,#2D6A4F,#40916C);padding:72px 28px 24px;border-radius:0 0 30px 30px;text-align:center;">
+    <button class="back-btn" style="top:18px;left:16px;background:rgba(255,255,255,.15);color:#fff;" onclick="go('home')">←</button>
+    <div style="width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.12);margin:0 auto 10px;display:flex;align-items:center;justify-content:center;">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#B7E4C7" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    </div>
+    <h2 id="hc-name" style="font-size:20px;font-weight:700;color:#fff;">Patient</h2>
+    <p style="font-size:12px;color:#B7E4C7;margin-top:3px;">Medical Profile</p>
+  </div>
+  <div style="padding:18px 24px 28px;flex:1;">
+    <div style="background:#fff;border-radius:18px;padding:16px 18px;box-shadow:0 4px 20px rgba(0,0,0,.05);">
+      <div class="health-row"><div class="h-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2D6A4F" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div><div class="h-label">Name</div><div class="h-value" id="hc-name2">—</div></div></div>
+      <div class="health-row"><div class="h-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2D6A4F" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg></div><div><div class="h-label">Age</div><div class="h-value" id="hc-age">—</div></div></div>
+      <div class="health-row"><div class="h-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2D6A4F" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4 4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div><div class="h-label">Gender</div><div class="h-value" id="hc-gender">—</div></div></div>
+      <div class="health-row"><div class="h-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2D6A4F" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 8v8M8 12h8"/></svg></div><div><div class="h-label">Medications</div><div class="h-value" id="hc-meds">—</div></div></div>
+      <div class="health-row"><div class="h-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2D6A4F" stroke-width="2"><path d="M12 2C8 2 4 6 4 10c0 6 8 12 8 12s8-6 8-12c0-4-4-8-8-8z"/></svg></div><div><div class="h-label">Blood Group</div><div class="h-value" id="hc-blood">—</div></div></div>
+      <div class="health-row"><div class="h-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2D6A4F" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><div><div class="h-label">Allergies</div><div class="h-value" id="hc-allergies">—</div></div></div>
+      <div class="health-row"><div class="h-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2D6A4F" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><div><div class="h-label">Last Surgery Date</div><div class="h-value" id="hc-surgery">—</div></div></div>
+    </div>
+    <div style="text-align:center;margin-top:20px;">
+      <button class="btn-next" onclick="go('home')">← Back to Home</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- end phone -->
+</div><!-- end phone-outer -->
+
+<script>
+const D={name:'',age:'',gender:'',phone:'',meds:'',blood:'',allergies:'',caretaker:'',subtype:'',surgery:''};
+let cur='splash', hasLogged=false;
+
+function go(id){
+  if(cur==='screen2')saveProfile();
+  if(cur==='screen3'){D.surgery=document.getElementById('f-surgery').value;}
+  const c=document.getElementById(cur),n=document.getElementById(id);
+  c.classList.add('hidden');
+  setTimeout(()=>{n.classList.remove('hidden');n.scrollTop=0;cur=id;
+    if(id==='home')setupHome();
+    if(id==='healthcard')setupHealthCard();
+    if(id==='allset')launchConfetti();
+  },100);
+}
+
+function goLog(){
+  if(hasLogged){return;}
+  go('screen7');
+}
+
+function markLogged(){
+  hasLogged=true;
+  loggedDate=new Date().toDateString();
+  document.getElementById('card-log-title').textContent='Logged and reflected';
+  document.getElementById('card-log-desc').textContent='See you tomorrow for the next check-in';
+  document.getElementById('card-log').style.opacity='.7';
+}
+let loggedDate='';
+// Reset card after midnight
+function checkLogReset(){
+  if(hasLogged && new Date().toDateString()!==loggedDate){
+    hasLogged=false;
+    document.getElementById('card-log-title').textContent='Ready to reflect on yesterday?';
+    document.getElementById('card-log-desc').textContent='Log your symptoms & feelings';
+    document.getElementById('card-log').style.opacity='1';
+  }
+}
+setInterval(checkLogReset,60000);
+
+function saveProfile(){
+  D.name=document.getElementById('f-name').value||'Friend';
+  D.age=document.getElementById('f-age').value;
+  D.gender=document.getElementById('f-gender').value;
+  D.phone=document.getElementById('f-phone').value;
+  D.meds=document.getElementById('f-meds').value;
+  D.blood=document.getElementById('f-blood').value;
+  D.allergies=document.getElementById('f-allergies').value;
+  D.caretaker=document.getElementById('f-caretaker').value;
+}
+
+function mkParticles(id){const c=document.getElementById(id);if(!c)return;for(let i=0;i<12;i++){const p=document.createElement('div');p.className='particle';const s=3+Math.random()*5;p.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;width:${s}px;height:${s}px;--p-op:${.1+Math.random()*.15};--dur:${4+Math.random()*5}s;--delay:${Math.random()*6}s;`;c.appendChild(p);}}
+['p-splash','p-landing','p-allset','p-home'].forEach(mkParticles);
+
+setTimeout(()=>go('landing'),2400);
+
+function selectSubtype(el,val){document.querySelectorAll('#screen3 .option-card').forEach(c=>c.classList.remove('selected'));el.classList.add('selected');D.subtype=val;}
+
+const ENS6Q=[
+  {key:'suffocation',name:'Nasal Suffocation',desc:'Feeling of being unable to breathe through the nose'},
+  {key:'burning',name:'Nasal Burning',desc:'Burning or painful sensation inside the nose'},
+  {key:'openness',name:'Nasal Openness',desc:'Sensation that the nose feels abnormally wide or empty'},
+  {key:'crusting',name:'Nasal Crusting',desc:'Formation of crusts inside the nose'},
+  {key:'dryness',name:'Nasal Dryness',desc:'Dryness of the nasal mucosa (sandpaper feeling)'},
+  {key:'air',name:'Impaired Air Sensation',desc:'Inability to feel air moving through the nose'},
+];
+
+const GOALS=[
+  {key:'goalA',name:'Sleep without breathing distress',desc:'Rest through the night peacefully'},
+  {key:'goalB',name:'Focus through work or study',desc:'Get through your day undistracted'},
+  {key:'goalC',name:'Reduce daily nasal discomfort',desc:'Ease dryness, burning & crusting'},
+  {key:'goalD',name:'Breathe without thinking about it',desc:'Stop hyper-awareness of every breath'},
+  {key:'goalE',name:'Understand my symptom triggers',desc:'Discover patterns you can\'t see alone'},
+];
+
+function buildSliders(containerId,items,showDesc){
+  const wrap=document.getElementById(containerId);
+  items.forEach((item,i)=>{
+    const div=document.createElement('div');
+    div.className='slider-row';
+    div.style.animation=`slideUp .35s ${i*0.06}s ease both`;
+    const descHtml=showDesc&&item.desc?`<div style="font-size:10px;color:#999;margin-bottom:4px;line-height:1.3;">${item.desc}</div>`:'';
+    div.innerHTML=`<div class="slider-label"><h4>${item.name}</h4><span class="val">0</span></div>${descHtml}<input type="range" min="0" max="5" value="0" oninput="this.parentElement.querySelector('.val').textContent=this.value;updateSliderBg(this,0,5)"/>`;
+    wrap.appendChild(div);
+  });
+}
+
+function buildGoalSliders(containerId,items){
+  const wrap=document.getElementById(containerId);
+  items.forEach((item,i)=>{
+    const div=document.createElement('div');
+    div.className='goal-card';
+    div.style.animation=`slideUp .35s ${i*0.06}s ease both`;
+    div.innerHTML=`<div class="goal-header"><h4>${item.name}</h4><span class="val">0</span></div><div class="goal-desc">${item.desc}</div><input type="range" min="0" max="5" value="0" oninput="this.parentElement.querySelector('.val').textContent=this.value;updateGoalBg(this)"/>`;
+    wrap.appendChild(div);
+  });
+}
+
+function updateSliderBg(el,min,max){const pct=((el.value-min)/(max-min))*100;el.style.background=`linear-gradient(90deg,#52B788 ${pct}%,#E8DFD0 ${pct}%)`;}
+function updateGoalBg(el){const pct=(el.value/5)*100;el.style.background=`linear-gradient(90deg,#52B788 ${pct}%,#E8DFD0 ${pct}%)`;}
+
+buildSliders('baseline-sliders',ENS6Q,true);
+buildGoalSliders('goal-sliders',GOALS);
+buildSliders('daily-sliders',ENS6Q,false);
+
+// init prox slider bg
+setTimeout(()=>{const ps=document.getElementById('prox-slider');if(ps)updateSliderBg(ps,1,10);},50);
+
+function toggleChip(el){el.classList.toggle('active');updateTriggerDisplay();}
+function updateTriggerDisplay(){
+  const active=document.querySelectorAll('#trigger-chips .chip.active');
+  const display=document.getElementById('trigger-display');
+  if(active.length===0){display.innerHTML='<span style="color:#bbb;font-size:12px;">Tap to select below...</span>';return;}
+  display.innerHTML='';
+  active.forEach(c=>{const tag=document.createElement('span');tag.style.cssText='background:rgba(45,106,79,.1);color:#2D6A4F;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:600;';tag.textContent=c.textContent.trim();display.appendChild(tag);});
+}
+
+(function(){
+  const hrs=document.getElementById('sleep-hrs'),min=document.getElementById('sleep-min');
+  for(let i=0;i<=16;i++){const o=document.createElement('option');o.value=i;o.textContent=i;if(i===7)o.selected=true;hrs.appendChild(o);}
+  for(let i=0;i<60;i+=5){const o=document.createElement('option');o.value=i;o.textContent=String(i).padStart(2,'0');if(i===30)o.selected=true;min.appendChild(o);}
+})();
+
+const greetings={
+  morning:{
+    Female:["Hey sunshine ☀️ how's your morning glow today?","Good morning, beautiful soul ✨ ready to breathe into a fresh start?","Rise and shine 🌸 how's your energy feeling this morning?","A new day, a new breath 🌿 how are you feeling right now?"],
+    Male:["Morning champ ☀️ how's your energy kicking in?","Rise up 🌤 how's the morning treating you?","New day, new breath 💨 how are you feeling?","Good morning, warrior 🌅 ready to take it steady today?"],
+  },
+  midday:{
+    Female:["Hey there 🌷 how's your day unfolding?","Midday check-in 💛 how are you holding up?","Quick breath break 🌿 how's everything feeling?","You've made it halfway ✨ how's your energy now?"],
+    Male:["Midday momentum 💪 how's your flow going?","Quick reset time ⚡ how's the body feeling?","Halfway through 🔥 how's your stamina today?","Steady and strong 💨 how are you doing right now?"],
+  },
+  evening:{
+    Female:["Golden hour glow 🌅 how was your day?","Evening calm settling in 🌸 how are you feeling now?","You made it through 💛 how's your body this evening?","Soft sunset vibes ✨ how's your energy?"],
+    Male:["Almost there 🌇 how did today treat you?","Winding down 💨 how's the body now?","Solid effort today 💪 how are you feeling?","Sunset mode on 🔥 how's your energy right now?"],
+  },
+  night:{
+    Female:["Hey moonlight 🌙 how are you settling in tonight?","Time to unwind ✨ how's your body feeling?","Gentle night ahead 🌸 how was today for you?","Cozy hours 🌿 how's everything winding down?"],
+    Male:["Night mode on 🌙 how's your energy now?","Time to recharge 🔋 how did today go?","Winding down, champ 🌌 how are you feeling?","Quiet evening vibes ✨ everything steady?"],
+  }
+};
+
+function getTimeSlot(){const h=new Date().getHours();if(h>=5&&h<10)return'morning';if(h>=10&&h<15)return'midday';if(h>=15&&h<19)return'evening';return'night';}
+
+function setupHome(){
+  const slot=getTimeSlot();
+  const gender=(D.gender==='Female')?'Female':'Male';
+  const pool=greetings[slot][gender];
+  const msg=pool[Math.floor(Math.random()*pool.length)];
+  document.getElementById('home-greeting-text').textContent=msg;
+  document.getElementById('home-name').textContent=(D.name||'Friend');
+  document.getElementById('settingsMenu').classList.remove('show');
+}
+
+function setupHealthCard(){
+  document.getElementById('hc-name').textContent=D.name||'Patient';
+  document.getElementById('hc-name2').textContent=D.name||'—';
+  document.getElementById('hc-age').textContent=D.age||'—';
+  document.getElementById('hc-gender').textContent=D.gender||'—';
+  document.getElementById('hc-meds').textContent=D.meds||'—';
+  document.getElementById('hc-blood').textContent=D.blood||'—';
+  document.getElementById('hc-allergies').textContent=D.allergies||'—';
+  document.getElementById('hc-surgery').textContent=D.surgery||'—';
+}
+
+function launchConfetti(){
+  const c=document.getElementById('confetti-container');c.innerHTML='';
+  const shapes=['●','◆','▲','★','✦','◎'];
+  const colors=['#B7E4C7','#74C69D','#52B788','#fff','#d4edda'];
+  for(let i=0;i<25;i++){
+    const s=document.createElement('span');s.className='confetti';
+    s.textContent=shapes[Math.floor(Math.random()*shapes.length)];
+    s.style.left=Math.random()*100+'%';s.style.top='-30px';
+    s.style.color=colors[Math.floor(Math.random()*colors.length)];
+    s.style.animationDelay=Math.random()*1.5+'s';
+    s.style.animationDuration=(2+Math.random()*2)+'s';
+    c.appendChild(s);
+  }
+}
+
+document.getElementById('phone').addEventListener('click',function(e){
+  const menu=document.getElementById('settingsMenu');
+  if(!e.target.closest('.settings-menu')&&!e.target.closest('button[onclick*="settingsMenu"]')){menu.classList.remove('show');}
+});
+</script>
+</body>
+</html>
