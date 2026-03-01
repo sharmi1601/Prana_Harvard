@@ -21,7 +21,7 @@
 // CONFIG
 // ─────────────────────────────────────────────────────────────
 
-var GROQ_API_KEY = process.env.GROQ_API_KEY;   // Replace with real key
+var GROQ_API_KEY = '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';   // Replace with real key
 var GROQ_MODEL   = 'llama-3.3-70b-versatile';
 var GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
 var USE_MOCK     = false;  // Set to false when API key is ready

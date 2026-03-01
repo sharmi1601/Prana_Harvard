@@ -197,6 +197,13 @@ body{background:linear-gradient(135deg,#e8e0d4,#d5d0c8);display:flex;align-items
     <p style="font-size:12px;color:#40916C;font-weight:600;align-self:flex-end;cursor:pointer;margin:0 0 28px;">Forgot password?</p>
     <button class="btn-primary" id="login-btn">Log In</button>
     <p style="font-size:13px;color:#6B7C6E;margin-top:20px;">No account? <span style="color:#2D6A4F;font-weight:600;cursor:pointer;" onclick="go('signup')">Sign Up</span></p>
+    <div style="margin-top:20px;padding:12px 14px;background:rgba(45,106,79,.06);border-radius:12px;border:1px dashed #74C69D;">
+      <p style="font-size:10px;font-weight:700;color:#2D6A4F;margin:0 0 6px;letter-spacing:.5px;text-transform:uppercase;">Demo Accounts</p>
+      <p style="font-size:11px;color:#6B7C6E;margin:0 0 4px;cursor:pointer;" onclick="_fillDemo('james@prana.demo')">👤 <b>james@prana.demo</b> — plateau + flares (28 days)</p>
+      <p style="font-size:11px;color:#6B7C6E;margin:0 0 4px;cursor:pointer;" onclick="_fillDemo('meera@prana.demo')">👤 <b>meera@prana.demo</b> — gradual improver (28 days)</p>
+      <p style="font-size:11px;color:#6B7C6E;margin:0;cursor:pointer;" onclick="_fillDemo('anika@prana.demo')">👤 <b>anika@prana.demo</b> — newly diagnosed (28 days)</p>
+      <p style="font-size:10px;color:#999;margin-top:6px;">Password for all: <b>demo1234</b> · tap a name to fill</p>
+    </div>
   </div>
 </div>
 
@@ -642,6 +649,97 @@ function goalSliderToTarget(baselineAvg,sliderValue){
 }
 </script>
 
+<!-- ════ DEMO PATIENTS ════ -->
+<script>
+function _demoDates(n){var dates=[];var now=new Date();for(var i=n-1;i>=0;i--){var d=new Date(now);d.setDate(d.getDate()-i);var yyyy=d.getFullYear();var mm=String(d.getMonth()+1).padStart(2,'0');var dd=String(d.getDate()).padStart(2,'0');dates.push(yyyy+'-'+mm+'-'+dd);}return dates;}
+
+var DEMO_JAMES=(function(){
+  var dates=_demoDates(28);
+  var arcs={
+    suffocation:[2,2,2,2,3,2, 4,3,2,2,2,2,2,2, 4,3,2,2,2,2,2,2, 4,3,2,2,2,2],
+    burning:    [2,2,2,1,2,2, 3,2,2,2,1,2,2,2, 3,2,2,1,2,2,1,2, 3,2,2,1,2,1],
+    openness:   [3,3,3,3,3,2, 4,3,3,3,3,2,3,3, 4,3,3,3,2,3,3,2, 4,3,3,2,3,2],
+    crusting:   [3,3,2,3,3,3, 4,3,3,2,3,3,2,3, 3,3,3,2,3,2,3,2, 4,3,2,3,2,2],
+    dryness:    [3,3,3,2,3,3, 4,3,3,3,2,3,3,2, 4,3,3,2,3,2,3,2, 3,3,2,2,2,2],
+    air:        [2,2,2,2,2,2, 3,2,2,2,2,2,2,1, 3,2,2,2,2,1,2,1, 3,2,2,1,2,1],
+  };
+  var triggers=[
+    ['Dry Air'],['Dry Air'],[],['Exercise'],[],['Poor Sleep'],
+    ['Weather Change','Poor Sleep','Skipped Meds'],['Weather Change'],[],['Exercise'],[],[],['Dry Air'],[],
+    ['Weather Change','Skipped Meds','Stress'],['Weather Change'],[],[],['Exercise'],['Dry Air'],[],[],
+    ['Weather Change','Poor Sleep','Skipped Meds'],['Weather Change'],['Dry Air'],[],[],[],
+  ];
+  var sleepHrs=[6.5,6,6.5,7,6,5, 4.5,6,6.5,7,7,6.5,6,6.5, 5,6,6.5,7,7,6.5,7,7, 4.5,6,6.5,7,7,7];
+  var freeTexts=["Usual morning routine. Nose feels about the same as always.","Dry air at work is annoying but manageable with rinses.","Decent day. Did my exercises, felt a bit better.","Went for a run. Breathing felt weird during but ok after.","Crusting is persistent. Feels like it never fully goes away.","Slept poorly. Could feel every breath all night.","Bad flare today. Weather dropped 20 degrees and I skipped my meds. Terrible combo.","Still feeling yesterday's flare. Extra rinses helped some.","Back to baseline. This is my normal now I guess.","Good workout day. Exercise doesn't seem to make things worse.","Barely noticed symptoms during a busy work day.","Steady. Not better, not worse. Just... there.","Dry air in the office building is relentless.","Tried a new nasal gel. Might be helping the crusting.","Another weather flare. Forgot meds again. Need to set a reminder.","Recovering from yesterday. The pattern is obvious now — weather + no meds = bad.","Good day. Stuck to routine, symptoms stayed low.","Minimal discomfort. Best day in this stretch.","Light exercise. No negative effect on symptoms.","Some dryness from the office A/C but nothing terrible.","Really good day. Barely thought about my nose.","Consistent. Maybe the gel is actually working.","Big weather shift again. Bracing for a flare.","Yep, flare hit. Not as bad as last time though.","Recovery day. Stayed home, humidity helped.","Almost back to normal. These rebounds are getting faster.","Stable day. Work was fine, symptoms were background noise.","Good end to the cycle. Feeling more in control."];
+  var checkins=[];
+  for(var i=0;i<28;i++){
+    var ens6q={suffocation:arcs.suffocation[i],burning:arcs.burning[i],openness:arcs.openness[i],crusting:arcs.crusting[i],dryness:arcs.dryness[i],air:arcs.air[i]};
+    var sh=sleepHrs[i];
+    checkins.push({date:dates[i],ens6q:ens6q,ens6qTotal:Object.values(ens6q).reduce(function(a,b){return a+b;},0),freeText:freeTexts[i],triggers:triggers[i],sleep:{hours:Math.floor(sh),minutes:Math.round((sh%1)*60)},goalProximity:0,nlpOutput:null,goalProgress:null});
+  }
+  return {
+    profile:{name:'James Cooper',age:'45',gender:'Male',phone:'+1 (555) 876-4321',meds:'NeilMed rinse, Ponaris oil, Nasal gel',blood:'O+',allergies:'None known',caretaker:'linda.cooper@email.com',subtype:'ENS-MT',surgery:'2024-06-15',baselineENS6Q:{suffocation:2,burning:2,openness:3,crusting:3,dryness:3,air:2},baselineTotal:15,baselineStatus:'confirmed',goals:[{key:'goalB',name:'Focus through work or study',target:3},{key:'goalD',name:'Breathe without thinking about it',target:4},{key:'goalE',name:'Understand my symptom triggers',target:3}]},
+    checkins:checkins
+  };
+})();
+
+var DEMO_MEERA=(function(){
+  var dates=_demoDates(28);
+  var arcs={
+    suffocation:[3,3,3,3,2,2,2,3,2,2, 4,3,2,2,2,2,1,1,1,3, 2,1,1,1,1,1,1,0],
+    burning:    [3,3,2,3,2,2,2,2,2,2, 3,2,2,2,1,1,1,1,1,2, 1,1,1,1,1,0,1,0],
+    openness:   [4,4,3,3,3,3,3,3,3,2, 4,3,3,2,2,2,2,2,2,3, 2,2,2,1,1,1,1,1],
+    crusting:   [2,2,2,2,2,1,1,2,1,1, 3,2,1,1,1,1,1,1,1,2, 1,1,1,1,0,0,0,0],
+    dryness:    [4,4,3,3,3,3,3,2,2,2, 4,3,3,2,2,2,2,1,1,3, 2,1,1,1,1,1,1,1],
+    air:        [3,3,3,2,2,2,2,2,2,2, 3,2,2,2,2,1,1,1,1,2, 1,1,1,1,1,1,0,0],
+  };
+  var triggers=[['A/C','Dry Air'],['Dry Air'],['A/C'],['Dry Air','Stress'],[],['A/C'],['Dry Air'],[],['A/C','Dry Air'],['Dry Air'],['Stress','Poor Sleep','A/C'],['A/C','Dry Air'],['Dry Air'],[],['A/C'],[],['Dry Air'],[],['A/C'],['Stress','Weather Change'],['A/C'],[],['Dry Air'],[],[],['A/C'],[],[]];
+  var sleepHrs=[5.5,6,6,6.5,6.5,7,7,6.5,7,7, 4.5,6,6.5,7,7,7.5,7.5,7.5,7,5, 7,7.5,7.5,8,7.5,8,7.5,8];
+  var checkins=[];
+  for(var i=0;i<28;i++){
+    var ens6q={suffocation:arcs.suffocation[i],burning:arcs.burning[i],openness:arcs.openness[i],crusting:arcs.crusting[i],dryness:arcs.dryness[i],air:arcs.air[i]};
+    var sh=sleepHrs[i];
+    checkins.push({date:dates[i],ens6q:ens6q,ens6qTotal:Object.values(ens6q).reduce(function(a,b){return a+b;},0),freeText:'',triggers:triggers[i],sleep:{hours:Math.floor(sh),minutes:Math.round((sh%1)*60)},goalProximity:0,nlpOutput:null,goalProgress:null});
+  }
+  return {
+    profile:{name:'Meera Sharma',age:'32',gender:'Female',phone:'+1 (555) 234-5678',meds:'Saline spray, Humidifier, Sesame oil',blood:'B+',allergies:'Dust, Pollen',caretaker:'raj.sharma@email.com',subtype:'ENS-IT',surgery:'2025-12-01',baselineENS6Q:{suffocation:3,burning:3,openness:4,crusting:2,dryness:4,air:3},baselineTotal:19,baselineStatus:'confirmed',goals:[{key:'goalA',name:'Sleep without breathing distress',target:4},{key:'goalC',name:'Reduce daily nasal discomfort',target:3},{key:'goalE',name:'Understand my symptom triggers',target:3}]},
+    checkins:checkins
+  };
+})();
+
+var DEMO_ANIKA=(function(){
+  var dates=_demoDates(28);
+  var arcs={
+    suffocation:[4,5,4,3,4,5,3,4,3,4, 5,3,3,4,3,2,3,4,2,3, 4,2,3,2,2,3,2,2],
+    burning:    [4,4,3,4,3,4,4,3,3,3, 4,3,4,3,2,3,2,3,3,2, 3,2,2,3,2,2,2,1],
+    openness:   [5,5,4,4,5,4,4,5,4,3, 5,4,3,4,3,3,4,3,3,3, 4,3,2,3,3,2,2,2],
+    crusting:   [3,3,4,3,3,4,3,2,3,3, 4,3,2,3,2,2,3,2,2,3, 3,2,2,2,2,2,1,1],
+    dryness:    [5,5,4,4,5,4,5,4,3,4, 5,4,3,3,3,3,4,3,2,3, 4,3,2,2,3,2,2,2],
+    air:        [4,4,4,3,4,5,3,4,3,3, 4,3,3,3,3,2,3,3,2,2, 3,2,3,2,2,2,2,1],
+  };
+  var triggers=[['Stress','Dry Air'],['Stress','Poor Sleep','A/C'],['Dry Air'],['Exercise'],['A/C','Dry Air'],['Stress','Weather Change','Poor Sleep'],['Exercise'],[],['Dry Air'],['Stress'],['Stress','Poor Sleep','Skipped Meds'],['Exercise'],['Dry Air'],[],['Exercise'],['Dry Air'],['Stress','A/C'],['Weather Change'],['Exercise'],[],['Stress','Poor Sleep'],['Exercise'],[],['Stress'],['Exercise','Dry Air'],[],[],[]];
+  var sleepHrs=[4,3.5,5,6,4.5,3,6,5.5,6,5, 3.5,6,6.5,5,6.5,6,5,5.5,7,6.5, 4,6.5,7,5.5,7,7,7.5,7];
+  var checkins=[];
+  for(var i=0;i<28;i++){
+    var ens6q={suffocation:arcs.suffocation[i],burning:arcs.burning[i],openness:arcs.openness[i],crusting:arcs.crusting[i],dryness:arcs.dryness[i],air:arcs.air[i]};
+    var sh=sleepHrs[i];
+    checkins.push({date:dates[i],ens6q:ens6q,ens6qTotal:Object.values(ens6q).reduce(function(a,b){return a+b;},0),freeText:'',triggers:triggers[i],sleep:{hours:Math.floor(sh),minutes:Math.round((sh%1)*60)},goalProximity:0,nlpOutput:null,goalProgress:null});
+  }
+  return {
+    profile:{name:'Anika Patel',age:'27',gender:'Female',phone:'+1 (555) 111-9999',meds:'Saline rinse, Nasal gel, Vitamin E oil',blood:'A+',allergies:'Pollen, Perfume',caretaker:'priya.patel@email.com',subtype:'ENS-Both',surgery:'2026-01-15',baselineENS6Q:{suffocation:4,burning:4,openness:5,crusting:3,dryness:5,air:4},baselineTotal:25,baselineStatus:'confirmed',goals:[{key:'goalA',name:'Sleep without breathing distress',target:5},{key:'goalC',name:'Reduce daily nasal discomfort',target:4},{key:'goalD',name:'Breathe without thinking about it',target:4},{key:'goalE',name:'Understand my symptom triggers',target:3}]},
+    checkins:checkins
+  };
+})();
+
+// Demo credentials map
+var DEMO_CREDS={
+  'james@prana.demo': DEMO_JAMES,
+  'meera@prana.demo': DEMO_MEERA,
+  'anika@prana.demo': DEMO_ANIKA
+};
+var DEMO_PASSWORD='demo1234';
+</script>
+
 <!-- ════ AUTH SERVICE ════ -->
 <script>
 async function signUp(email,password){
@@ -974,8 +1072,26 @@ function _wireAuthButtons(){
   if(lb)lb.addEventListener('click',async function(){
     var emailEl=document.querySelector('#login input[type=email]'),passEl=document.querySelector('#login input[type=password]');
     if(!emailEl||!passEl)return;
+    var email=emailEl.value.trim().toLowerCase();
+    var pwd=passEl.value;
+
+    // ── Demo account shortcut ──────────────────────────────────
+    if(DEMO_CREDS[email]&&pwd===DEMO_PASSWORD){
+      _setLoading(lb,'Loading demo...');
+      var demo=DEMO_CREDS[email];
+      APP.uid='demo-'+email.split('@')[0];
+      APP.profile=demo.profile;
+      APP.checkins=demo.checkins.slice().reverse(); // newest first
+      APP.isMockMode=true;
+      _syncProfileToFrontend(APP.profile);
+      _clearLoading(lb,'Log In');
+      _clearError('login');
+      go('home');
+      return;
+    }
+    // ── Normal Firebase login ──────────────────────────────────
     _setLoading(lb,'Signing in...');
-    var r=await logIn(emailEl.value.trim(),passEl.value);
+    var r=await logIn(email,pwd);
     _clearLoading(lb,'Log In');
     if(r.success){
       APP.uid=r.uid;_clearError('login');
@@ -1251,6 +1367,13 @@ const greetings={
 
 function getTimeSlot(){const h=new Date().getHours();if(h>=5&&h<10)return'morning';if(h>=10&&h<15)return'midday';if(h>=15&&h<19)return'evening';return'night';}
 
+function _fillDemo(email){
+  var emailEl=document.querySelector('#login input[type=email]');
+  var passEl=document.querySelector('#login input[type=password]');
+  if(emailEl)emailEl.value=email;
+  if(passEl)passEl.value='demo1234';
+}
+
 function setupHome(){
   const slot=getTimeSlot();
   const gender=(D.gender==='Female')?'Female':'Male';
@@ -1320,6 +1443,26 @@ function buildReport(){
   // Ensure real data is loaded into INS_ARCS if available
   var hasRealData=typeof APP!=='undefined'&&APP.checkins&&APP.checkins.length>0;
   if(hasRealData&&INS_COUNT<=1){_populateInsightsFromReal();}
+
+  // Lock report until 14 days of logging
+  var daysLogged=INS_COUNT;
+  var daysNeeded=14;
+  var dlBtn=document.getElementById('report-dl-btn');
+  if(daysLogged<daysNeeded){
+    var remaining=daysNeeded-daysLogged;
+    if(dlBtn){dlBtn.disabled=true;dlBtn.style.opacity='0.4';dlBtn.style.cursor='not-allowed';}
+    document.getElementById('report-print-area').innerHTML=
+      '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center;">'
+      +'<div style="font-size:52px;margin-bottom:16px;">🔒</div>'
+      +'<p style="font-size:16px;font-weight:700;color:#1B4332;margin-bottom:8px;">Report unlocks in '+remaining+' day'+(remaining!==1?'s':'')+'</p>'
+      +'<p style="font-size:13px;color:#6B7C6E;line-height:1.6;margin-bottom:20px;">Your Clinician Report becomes available after <b>14 consecutive days</b> of logging. This ensures the data is rich enough for meaningful clinical insights.</p>'
+      +'<div style="width:100%;max-width:260px;background:#E8DFD0;border-radius:8px;height:8px;overflow:hidden;margin-bottom:10px;">'
+      +'<div style="height:100%;width:'+Math.round(daysLogged/daysNeeded*100)+'%;background:linear-gradient(90deg,#2D6A4F,#52B788);border-radius:8px;"></div></div>'
+      +'<p style="font-size:11px;color:#999;">'+daysLogged+' / '+daysNeeded+' days logged</p>'
+      +'</div>';
+    return;
+  }
+  if(dlBtn){dlBtn.disabled=false;dlBtn.style.opacity='';dlBtn.style.cursor='';}
 
   var today=new Date();
   var nDays=INS_COUNT;
@@ -1601,25 +1744,24 @@ function insTriggerDelta(trigger,domain){
 function renderInsFlare(){
   var el=document.getElementById('ins-flare');
   var flare=null;
-  var todayIdx=INS_TODAY_IDX;
-  var prevIdx=todayIdx-1;
-  if(INS_ARCS[D_KEYS[0]]&&INS_ARCS[D_KEYS[0]].length>todayIdx){
+  // Flare fires if a domain exceeds the user's own baseline for 3 consecutive days
+  if(INS_COUNT>=3){
     D_KEYS.forEach(function(d){
-      var s1=INS_ARCS[d][todayIdx];
-      var s2=prevIdx>=0?INS_ARCS[d][prevIdx]:s1;
-      if(!flare&&s1>=4&&s2>=4)flare={domain:D_NAMES[d],avg:((s1+s2)/2).toFixed(1)};
+      if(!flare){
+        var base=INS_BASELINE[d];
+        var s3=INS_ARCS[d][INS_TODAY_IDX];
+        var s2=INS_ARCS[d][INS_TODAY_IDX-1];
+        var s1=INS_ARCS[d][INS_TODAY_IDX-2];
+        if(s1>base&&s2>base&&s3>base)flare={domain:D_NAMES[d],avg:((s1+s2+s3)/3).toFixed(1),base:base};
+      }
     });
-    if(!flare){
-      D_KEYS.forEach(function(d){
-        if(!flare&&INS_ARCS[d][todayIdx]>=4)flare={domain:D_NAMES[d],avg:INS_ARCS[d][todayIdx].toFixed(1)};
-      });
-    }
   }
   el.style.display='block';
   if(flare){
-    el.innerHTML='<div style="background:#FEF2F2;border:1.5px solid #EF4444;border-radius:12px;padding:10px 14px;display:flex;gap:10px;align-items:center;margin-bottom:2px;"><span style="font-size:16px;">⚠️</span><div><p style="font-size:11px;font-weight:700;color:#991B1B;">Active flare: '+flare.domain+' at '+flare.avg+'/5</p><p style="font-size:10px;color:#DC2626;">Elevated for consecutive days — consider consulting your clinician.</p></div></div>';
+    el.innerHTML='<div style="background:#FEF2F2;border:1.5px solid #EF4444;border-radius:12px;padding:10px 14px;display:flex;gap:10px;align-items:center;margin-bottom:2px;"><span style="font-size:16px;">⚠️</span><div><p style="font-size:11px;font-weight:700;color:#991B1B;">Active flare: '+flare.domain+' above your baseline for 3 days</p><p style="font-size:10px;color:#DC2626;">Avg '+flare.avg+'/5 vs your baseline '+flare.base+'/5 — consider consulting your clinician.</p></div></div>';
   } else {
-    var msg=INS_COUNT>1?'Monitoring continues.':'Day 1 baseline established — keep logging!';
+    var daysLeft=Math.max(0,3-INS_COUNT);
+    var msg=INS_COUNT>=3?'Monitoring continues — no 3-day flare detected.':daysLeft+' more day'+(daysLeft!==1?'s':'')+' of data needed to monitor for flares.';
     el.innerHTML='<div style="background:#D1FAE5;border:1.5px solid #34D399;border-radius:12px;padding:10px 14px;display:flex;gap:10px;align-items:center;margin-bottom:2px;"><span style="font-size:16px;">✅</span><div><p style="font-size:11px;font-weight:700;color:#065F46;">No active flare — all scores in safe range</p><p style="font-size:10px;color:#047857;">'+msg+'</p></div></div>';
   }
 }
